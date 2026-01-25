@@ -7,7 +7,7 @@ namespace BTB.Entities.Models
         public string Password {get; set; } = "";
         public bool Visible {get; set; }= true;
         public DateTime FechaCreacion {get; set; } = DateTime.Now;
-        public Tier? Tier {get;set;}
+        public Tier Tier {get;set;} = new Tier();
         public List<Partida> LstPartidas {get; set; } = new List<Partida>();
 
     }
