@@ -9,6 +9,7 @@ namespace BTB.Entities.Models
         public DateTime FechaCreacion {get; set; } = DateTime.Now;
         public Tier Tier {get;set;} = new Tier();
         public List<Partida> LstPartidas {get; set; } = new List<Partida>();
+        public Usuario(){}
 
     }
 }
