@@ -2,6 +2,7 @@ namespace BTB.Entities.Models
 {
     public class Usuario
     {
+        public int Id { get; set; } = 0;
         public string Nombre {get;set;} = "";
         public string Correo {get;set; } = "";
         public string Password {get; set; } = "";

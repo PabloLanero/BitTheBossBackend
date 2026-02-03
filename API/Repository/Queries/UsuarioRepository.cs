@@ -19,45 +19,79 @@ namespace BTB.Repository
 
         public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
         {
-            Usuario newUsuario = new Usuario
+            var newUsuario = new Usuario
             {
-                Nombre= userDtoIn.UserName,
+                Id = id,
+                Nombre = userDtoIn.UserName,
                 Correo = userDtoIn.Email,
                 Password = userDtoIn.Password
             };
             lstUsuarios.Add(newUsuario);
 
-            throw new NotImplementedException();
+            var userOut = new UserDTOOut
+            {
+                UserId = id,
+                UserName = newUsuario.Nombre,
+                Email = newUsuario.Correo,
+                Role = BTB.Entities.Enums.Roles.Usuario
+            };
+            id++;
+            return userOut;
         }
 
         public Task<bool> DeleteUsuarioAsync(int id)
         {
-            throw new NotImplementedException();
+            var existing = lstUsuarios.FirstOrDefault(u => u.Id == id);
+            if (existing == null) return Task.FromResult(false);
+            lstUsuarios.Remove(existing);
+            return Task.FromResult(true);
         }
 
         public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
-            throw new NotImplementedException();
+            var user = lstUsuarios.FirstOrDefault(u => u.Correo == loginDtoIn.Email && u.Password == loginDtoIn.Password);
+            if (user == null) throw new Exception("Credenciales inválidas");
+
+            // In a real implementation, map to UserDTOOut with real id/role
+            var userOut = new UserDTOOut
+            {
+                UserId = 0,
+                UserName = user.Nombre,
+                Email = user.Correo,
+                Role = BTB.Entities.Enums.Roles.Usuario
+            };
+            return userOut;
         }
 
         public Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var usuario = lstUsuarios.FirstOrDefault(u => u.Id == id);
+            return Task.FromResult(usuario!);
         }
 
         public Task<List<Usuario>> GetUsuariosAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(lstUsuarios.ToList());
         }
 
         public Task<bool> PostUsuarioAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            usuario.Id = id++;
+            lstUsuarios.Add(usuario);
+            return Task.FromResult(true);
         }
 
         public Task<bool> PutUsuarioAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            var existing = lstUsuarios.FirstOrDefault(u => u.Id == usuario.Id);
+            if (existing == null) return Task.FromResult(false);
+            existing.Nombre = usuario.Nombre;
+            existing.Correo = usuario.Correo;
+            existing.Password = usuario.Password;
+            existing.Visible = usuario.Visible;
+            existing.Tier = usuario.Tier;
+            existing.LstPartidas = usuario.LstPartidas;
+            return Task.FromResult(true);
         }
     }
 }

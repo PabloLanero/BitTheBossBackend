@@ -67,7 +67,7 @@ namespace BTB.Service
             var isOwnResource = userId == requestedUserID;
 
             var roleClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
-            if (roleClaim != null) return false;
+            if (roleClaim == null) return false;
             var isAdmin = roleClaim!.Value == Roles.Admin;
             
             var hasAccess = isOwnResource || isAdmin;
