@@ -19,15 +19,23 @@ namespace BTB.Repository
 
         public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
         {
-            Usuario newUsuario = new Usuario
+            var newUsuario = new Usuario
             {
-                Nombre= userDtoIn.UserName,
+                Nombre = userDtoIn.UserName,
                 Correo = userDtoIn.Email,
                 Password = userDtoIn.Password
             };
             lstUsuarios.Add(newUsuario);
 
-            throw new NotImplementedException();
+            var userOut = new UserDTOOut
+            {
+                UserId = id,
+                UserName = newUsuario.Nombre,
+                Email = newUsuario.Correo,
+                Role = BTB.Entities.Enums.Roles.Usuario
+            };
+            id++;
+            return userOut;
         }
 
         public Task<bool> DeleteUsuarioAsync(int id)
@@ -37,7 +45,18 @@ namespace BTB.Repository
 
         public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
-            throw new NotImplementedException();
+            var user = lstUsuarios.FirstOrDefault(u => u.Correo == loginDtoIn.Email && u.Password == loginDtoIn.Password);
+            if (user == null) throw new Exception("Credenciales inválidas");
+
+            // In a real implementation, map to UserDTOOut with real id/role
+            var userOut = new UserDTOOut
+            {
+                UserId = 0,
+                UserName = user.Nombre,
+                Email = user.Correo,
+                Role = BTB.Entities.Enums.Roles.Usuario
+            };
+            return userOut;
         }
 
         public Task<Usuario> GetUsuarioByIdAsync(int id)
