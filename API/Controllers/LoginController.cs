@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BTB.Entities.DTO;
 using BTB.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -16,6 +17,7 @@ public class LoginController : ControllerBase
 	}
 
 	[HttpPost("login")]
+	[AllowAnonymous]
 	public IActionResult Login([FromBody] LoginDtoIn dto)
 	{
 		try
@@ -30,6 +32,7 @@ public class LoginController : ControllerBase
 	}
 
 	[HttpPost("register")]
+	[AllowAnonymous]
 	public IActionResult Register([FromBody] UserDTOIn dto)
 	{
 		try
