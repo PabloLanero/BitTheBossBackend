@@ -3,6 +3,7 @@ using BTB.Service;
 using BTB.Entities.Models;
 using BTB.Entities.DTO;
 using Microsoft.AspNetCore.Authorization;
+using BTB.Service.Common;
 
 namespace API.Controllers;
 
@@ -21,17 +22,51 @@ public class UsuarioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUsuarios()
     {
-        var usuarios = await _usuarioService.GetUsuariosAsync();
-        return Ok(usuarios);
+        try
+        {
+            var usuarios = await _usuarioService.GetUsuariosAsync();
+            return Ok(usuarios);
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpGet("{id}")]
     [Authorize]
     public async Task<IActionResult> GetUsuario(int id)
     {
-        var usuario = await _usuarioService.GetUsuarioById(id);
-        if (usuario == null) return NotFound();
-        return Ok(usuario);
+        try
+        {
+            var usuario = await _usuarioService.GetUsuarioById(id);
+            if (usuario == null) return NotFound();
+            return Ok(usuario);
+        }
+        catch (NotFoundException nf)
+        {
+            return NotFound(new { message = nf.Message });
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -39,9 +74,23 @@ public class UsuarioController : ControllerBase
     public IActionResult CreateUsuario([FromBody] UserDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-
-        var userOut = _usuarioService.AddUserFromCredentials(dto);
-        return CreatedAtAction(nameof(GetUsuario), new { id = userOut.UserId ?? 0 }, userOut);
+        try
+        {
+            var userOut = _usuarioService.AddUserFromCredentials(dto);
+            return CreatedAtAction(nameof(GetUsuario), new { id = userOut.UserId ?? 0 }, userOut);
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpPost("fromcredentials")]
@@ -49,27 +98,70 @@ public class UsuarioController : ControllerBase
     public IActionResult CreateUsuarioFromCredentials([FromBody] UserDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-
-        var userOut = _usuarioService.AddUserFromCredentials(dto);
-        return Ok(userOut);
+        try
+        {
+            var userOut = _usuarioService.AddUserFromCredentials(dto);
+            return Ok(userOut);
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
     [Authorize]
     public async Task<IActionResult> UpdateUsuario(int id, [FromBody] Usuario usuario)
     {
-        // Optionally ensure id matches body if you have an Id property
-        var result = await _usuarioService.UpdateUsuario(usuario);
-        if (!result) return BadRequest(new { message = "No se pudo actualizar el usuario" });
-        return NoContent();
+        try
+        {
+            var result = await _usuarioService.UpdateUsuario(usuario);
+            if (!result) return BadRequest(new { message = "No se pudo actualizar el usuario" });
+            return NoContent();
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeleteUsuario(int id)
     {
-        var result = await _usuarioService.DeleteUsuario(id);
-        if (!result) return NotFound();
-        return NoContent();
+        try
+        {
+            var result = await _usuarioService.DeleteUsuario(id);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 }

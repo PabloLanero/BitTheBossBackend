@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BTB.Entities.DTO;
 using BTB.Service;
+using BTB.Service.Common;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -25,9 +26,17 @@ public class LoginController : ControllerBase
 			var token = _authService.Login(dto);
 			return Ok(new { token });
 		}
+		catch (ValidationException vex)
+		{
+			return BadRequest(new { message = vex.Message });
+		}
+		catch (BusinessException bex)
+		{
+			return Unauthorized(new { message = bex.Message });
+		}
 		catch (Exception ex)
 		{
-			return Unauthorized(new { message = ex.Message });
+			return StatusCode(500, new { message = ex.Message });
 		}
 	}
 
@@ -40,9 +49,17 @@ public class LoginController : ControllerBase
 			var token = _authService.Register(dto);
 			return Ok(new { token });
 		}
+		catch (ValidationException vex)
+		{
+			return BadRequest(new { message = vex.Message });
+		}
+		catch (BusinessException bex)
+		{
+			return BadRequest(new { message = bex.Message });
+		}
 		catch (Exception ex)
 		{
-			return BadRequest(new { message = ex.Message });
+			return StatusCode(500, new { message = ex.Message });
 		}
 	}
 }
