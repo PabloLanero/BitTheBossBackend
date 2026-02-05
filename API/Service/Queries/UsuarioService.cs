@@ -1,6 +1,7 @@
 using BTB.Entities.Models;
 using BTB.Entities.DTO;
 using BTB.Repository.Interfaces;
+using BTB.Service.Common;
 
 namespace BTB.Service
 {
@@ -43,14 +44,29 @@ namespace BTB.Service
 
         public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
         {
-            if (userDtoIn == null) throw new ArgumentNullException(nameof(userDtoIn));
+            if (userDtoIn == null) throw new ValidationException("Datos de usuario inválidos");
+
+            // simple business validation: email uniqueness
+            var all = _repository.GetUsuariosAsync().GetAwaiter().GetResult();
+            if (all.Any(u => string.Equals(u.Correo, userDtoIn.Email, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BusinessException("Ya existe un usuario con ese correo");
+            }
+
             return _repository.AddUserFromCredentials(userDtoIn);
         }
 
         public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
-            if (loginDtoIn == null) throw new ArgumentNullException(nameof(loginDtoIn));
-            return _repository.GetUserFromCredentials(loginDtoIn);
+            if (loginDtoIn == null) throw new ValidationException("Credenciales inválidas");
+            try
+            {
+                return _repository.GetUserFromCredentials(loginDtoIn);
+            }
+            catch (Exception ex)
+            {
+                throw new BusinessException(ex.Message);
+            }
         }
     }
 }

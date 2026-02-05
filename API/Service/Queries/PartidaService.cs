@@ -1,6 +1,7 @@
 using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using BTB.Service.Common;
 
 namespace BTB.Service
 {
@@ -15,6 +16,14 @@ namespace BTB.Service
 
         public async Task<PartidaDTOOut> AddPartidaAsync(PartidaDTOIn dto)
         {
+            if (dto == null) throw new ValidationException("PartidaDTOIn no puede ser null");
+            if (dto.ArrUsuario == null || !dto.ArrUsuario.Any()) throw new ValidationException("La partida debe contener al menos un usuario.");
+            if (dto.LstNodos != null)
+            {
+                var duplicate = dto.LstNodos.GroupBy(n => n.IdNodo).Any(g => g.Count() > 1);
+                if (duplicate) throw new ValidationException("Hay nodos duplicados (IdNodo debe ser único).");
+            }
+
             var model = MapDtoToModel(dto);
             await _repository.PostPartidaAsync(model);
             return MapModelToDto(model);
@@ -41,6 +50,10 @@ namespace BTB.Service
 
         public Task<bool> UpdatePartidaAsync(string id, PartidaDTOIn dto)
         {
+            if (string.IsNullOrWhiteSpace(id)) throw new ValidationException("Id inválido para actualizar partida.");
+            var existing = _repository.GetPartidaByIdAsync(id).GetAwaiter().GetResult();
+            if (existing == null) throw new NotFoundException($"Partida con id {id} no encontrada.");
+
             var model = MapDtoToModel(dto);
             model.IdPartida = id;
             return _repository.PutPartidaAsync(model);
