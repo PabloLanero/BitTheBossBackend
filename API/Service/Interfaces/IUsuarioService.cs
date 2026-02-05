@@ -1,4 +1,5 @@
 using BTB.Entities.Models;
+using BTB.Entities.DTO;
 
 namespace BTB.Service
 {
@@ -9,5 +10,9 @@ namespace BTB.Service
         public Task<bool> AddUsuario(Usuario p_usuario);
         public Task<bool> UpdateUsuario(Usuario p_usuario);
         public Task<bool> DeleteUsuario(int p_id);
+
+        // Credential-based helpers
+        public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn);
+        public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn);
     }
 }
