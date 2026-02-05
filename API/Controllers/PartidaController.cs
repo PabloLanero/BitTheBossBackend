@@ -40,9 +40,8 @@ public class PartidaController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var partida = MapDtoToModel(dto);
-        await _partidaService.AddPartidaAsync(partida);
-        return CreatedAtAction(nameof(GetPartida), new { id = partida.IdPartida }, partida);
+        var created = await _partidaService.AddPartidaAsync(dto);
+        return CreatedAtAction(nameof(GetPartida), new { id = created.IdPartida }, created);
     }
 
     [HttpPut("{id}")]
@@ -50,9 +49,7 @@ public class PartidaController : ControllerBase
     public async Task<IActionResult> UpdatePartida(string id, [FromBody] PartidaDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var partida = MapDtoToModel(dto);
-        partida.IdPartida = id;
-        var result = await _partidaService.UpdatePartidaAsync(partida);
+        var result = await _partidaService.UpdatePartidaAsync(id, dto);
         if (!result) return NotFound();
         return NoContent();
     }
@@ -66,15 +63,5 @@ public class PartidaController : ControllerBase
         return NoContent();
     }
 
-    private Partida MapDtoToModel(PartidaDTOIn dto)
-    {
-        var partida = new Partida
-        {
-            IdPartida = dto.IdPartida ?? Guid.NewGuid().ToString(),
-            ArrUsuario = dto.ArrUsuario?.Select(u => new Usuario { Id = u.Id ?? 0, Nombre = u.Nombre ?? string.Empty, Correo = u.Correo ?? string.Empty }).ToArray() ?? new Usuario[0],
-            LstNodos = dto.LstNodos?.Select(n => new Nodo { IdNodo = (byte)n.IdNodo, ArrTropas = (n.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = n.DuenoNodo == null ? null : new Usuario { Id = n.DuenoNodo.Id ?? 0, Nombre = n.DuenoNodo.Nombre ?? string.Empty, Correo = n.DuenoNodo.Correo ?? string.Empty } }).ToList() ?? new List<Nodo>()
-        };
-
-        return partida;
-    }
+    // Mappings moved to service
 }
