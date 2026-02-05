@@ -15,21 +15,21 @@ namespace BTB.Service
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
-        private readonly IUsuarioRepository _repository;
+        private readonly IUsuarioService _usuarioService;
 
-        public AuthService(IConfiguration configuration, IUsuarioRepository repository)
+        public AuthService(IConfiguration configuration, IUsuarioService usuarioService)
         {
             _configuration = configuration;
-            _repository = repository;
+            _usuarioService = usuarioService;
         }
 
         public string Login(LoginDtoIn loginDtoIn) {
-            var user = _repository.GetUserFromCredentials(loginDtoIn);
+            var user = _usuarioService.GetUserFromCredentials(loginDtoIn);
             return GenerateToken(user);
         }
 
         public string Register(UserDTOIn userDtoIn) {
-            var user = _repository.AddUserFromCredentials(userDtoIn);
+            var user = _usuarioService.AddUserFromCredentials(userDtoIn);
             return GenerateToken(user);
         }
 

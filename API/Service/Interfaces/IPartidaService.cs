@@ -1,13 +1,13 @@
-using BTB.Entities.Models;
+using BTB.Entities.DTO;
 
 namespace BTB.Service
 {
     public interface IPartidaService
     {
-        public Task<List<Partida>> GetPartidasAsync();
-        public Task<Partida?> GetPartidaByIdAsync(string p_id);
-        public Task<bool> AddPartidaAsync(Partida p_partida);
-        public Task<bool> UpdatePartidaAsync(Partida p_partida);
-        public Task<bool> DeletePartidaAsync(string p_id);
+        public Task<List<PartidaDTOOut>> GetPartidasAsync();
+        public Task<PartidaDTOOut?> GetPartidaByIdAsync(string id);
+        public Task<PartidaDTOOut> AddPartidaAsync(PartidaDTOIn dto);
+        public Task<bool> UpdatePartidaAsync(string id, PartidaDTOIn dto);
+        public Task<bool> DeletePartidaAsync(string id);
     }
 }

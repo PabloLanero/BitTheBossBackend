@@ -11,7 +11,7 @@ namespace BTB.Service
         public Task<bool> UpdateUsuario(Usuario p_usuario);
         public Task<bool> DeleteUsuario(int p_id);
 
-        // Ayudas de paso para operaciones basadas en credenciales
+        // Credential-based helpers
         public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn);
         public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn);
     }
