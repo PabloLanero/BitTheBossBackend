@@ -1,4 +1,5 @@
 using BTB.Entities.Models;
+using BTB.Entities.DTO;
 using BTB.Repository.Interfaces;
 
 namespace BTB.Service
@@ -38,6 +39,18 @@ namespace BTB.Service
         {
             if (p_usuario == null) throw new ArgumentNullException(nameof(p_usuario));
             return _repository.PutUsuarioAsync(p_usuario);
+        }
+
+        public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
+        {
+            if (userDtoIn == null) throw new ArgumentNullException(nameof(userDtoIn));
+            return _repository.AddUserFromCredentials(userDtoIn);
+        }
+
+        public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
+        {
+            if (loginDtoIn == null) throw new ArgumentNullException(nameof(loginDtoIn));
+            return _repository.GetUserFromCredentials(loginDtoIn);
         }
     }
 }
