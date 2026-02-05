@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using BTB.Repository.Interfaces;
+using BTB.Service;
 using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,18 +10,18 @@ namespace API.Controllers;
 [Route("[controller]")]
 public class PartidaController : ControllerBase
 {
-    private readonly IPartidaRepository _repository;
+    private readonly IPartidaService _partidaService;
 
-    public PartidaController(IPartidaRepository repository)
+    public PartidaController(IPartidaService partidaService)
     {
-        _repository = repository;
+        _partidaService = partidaService;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetPartidas()
     {
-        var partidas = await _repository.GetPartidasAsync();
+        var partidas = await _partidaService.GetPartidasAsync();
         return Ok(partidas);
     }
 
@@ -29,7 +29,7 @@ public class PartidaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetPartida(string id)
     {
-        var partida = await _repository.GetPartidaByIdAsync(id);
+        var partida = await _partidaService.GetPartidaByIdAsync(id);
         if (partida == null) return NotFound();
         return Ok(partida);
     }
@@ -41,7 +41,7 @@ public class PartidaController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var partida = MapDtoToModel(dto);
-        await _repository.PostPartidaAsync(partida);
+        await _partidaService.AddPartidaAsync(partida);
         return CreatedAtAction(nameof(GetPartida), new { id = partida.IdPartida }, partida);
     }
 
@@ -52,7 +52,7 @@ public class PartidaController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var partida = MapDtoToModel(dto);
         partida.IdPartida = id;
-        var result = await _repository.PutPartidaAsync(partida);
+        var result = await _partidaService.UpdatePartidaAsync(partida);
         if (!result) return NotFound();
         return NoContent();
     }
@@ -61,7 +61,7 @@ public class PartidaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeletePartida(string id)
     {
-        var result = await _repository.DeletePartidaAsync(id);
+        var result = await _partidaService.DeletePartidaAsync(id);
         if (!result) return NotFound();
         return NoContent();
     }

@@ -18,6 +18,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IPartidaRepository, PartidaRepository>();
+// Register service layer
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IPartidaService, PartidaService>();
 
 // Configure JWT authentication
 var jwtSecret = builder.Configuration["JWT:SecretKey"] ?? string.Empty;
