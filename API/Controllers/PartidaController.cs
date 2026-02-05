@@ -21,17 +21,51 @@ public class PartidaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetPartidas()
     {
-        var partidas = await _partidaService.GetPartidasAsync();
-        return Ok(partidas);
+        try
+        {
+            var partidas = await _partidaService.GetPartidasAsync();
+            return Ok(partidas);
+        }
+        catch (BTB.Service.Common.ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BTB.Service.Common.BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpGet("{id}")]
     [Authorize]
     public async Task<IActionResult> GetPartida(string id)
     {
-        var partida = await _partidaService.GetPartidaByIdAsync(id);
-        if (partida == null) return NotFound();
-        return Ok(partida);
+        try
+        {
+            var partida = await _partidaService.GetPartidaByIdAsync(id);
+            if (partida == null) return NotFound();
+            return Ok(partida);
+        }
+        catch (BTB.Service.Common.NotFoundException nf)
+        {
+            return NotFound(new { message = nf.Message });
+        }
+        catch (BTB.Service.Common.ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BTB.Service.Common.BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -39,9 +73,23 @@ public class PartidaController : ControllerBase
     public async Task<IActionResult> CreatePartida([FromBody] PartidaDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-
-        var created = await _partidaService.AddPartidaAsync(dto);
-        return CreatedAtAction(nameof(GetPartida), new { id = created.IdPartida }, created);
+        try
+        {
+            var created = await _partidaService.AddPartidaAsync(dto);
+            return CreatedAtAction(nameof(GetPartida), new { id = created.IdPartida }, created);
+        }
+        catch (BTB.Service.Common.ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BTB.Service.Common.BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
@@ -49,19 +97,51 @@ public class PartidaController : ControllerBase
     public async Task<IActionResult> UpdatePartida(string id, [FromBody] PartidaDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _partidaService.UpdatePartidaAsync(id, dto);
-        if (!result) return NotFound();
-        return NoContent();
+        try
+        {
+            var result = await _partidaService.UpdatePartidaAsync(id, dto);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+        catch (BTB.Service.Common.NotFoundException nf)
+        {
+            return NotFound(new { message = nf.Message });
+        }
+        catch (BTB.Service.Common.ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BTB.Service.Common.BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeletePartida(string id)
     {
-        var result = await _partidaService.DeletePartidaAsync(id);
-        if (!result) return NotFound();
-        return NoContent();
+        try
+        {
+            var result = await _partidaService.DeletePartidaAsync(id);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+        catch (BTB.Service.Common.ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BTB.Service.Common.BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
     }
-
-    // Mappings moved to service
 }
