@@ -1,0 +1,9 @@
+namespace BTB.Entities.DTO
+{
+    public class UsuarioRefDTO
+    {
+        public int? Id { get; set; }
+        public string? Nombre { get; set; }
+        public string? Correo { get; set; }
+    }
+}
