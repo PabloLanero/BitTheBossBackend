@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BTB.Entities.DTO
 {
-    public class TropaDTO
+    public class TropaDTOIn
     {
-        public int Id { get; set; }
-
         [Required]
         public string? Nombre { get; set; }
 
