@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using BTB.Repository.Interfaces;
+using BTB.Service;
 using BTB.Entities.Models;
 using BTB.Entities.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -10,18 +10,18 @@ namespace API.Controllers;
 [Route("[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly IUsuarioRepository _repository;
+    private readonly IUsuarioService _usuarioService;
 
-    public UsuarioController(IUsuarioRepository repository)
+    public UsuarioController(IUsuarioService usuarioService)
     {
-        _repository = repository;
+        _usuarioService = usuarioService;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetUsuarios()
     {
-        var usuarios = await _repository.GetUsuariosAsync();
+        var usuarios = await _usuarioService.GetUsuariosAsync();
         return Ok(usuarios);
     }
 
@@ -29,7 +29,7 @@ public class UsuarioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUsuario(int id)
     {
-        var usuario = await _repository.GetUsuarioByIdAsync(id);
+        var usuario = await _usuarioService.GetUsuarioById(id);
         if (usuario == null) return NotFound();
         return Ok(usuario);
     }
@@ -40,7 +40,7 @@ public class UsuarioController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userOut = _repository.AddUserFromCredentials(dto);
+        var userOut = _usuarioService.AddUserFromCredentials(dto);
         return CreatedAtAction(nameof(GetUsuario), new { id = userOut.UserId ?? 0 }, userOut);
     }
 
@@ -50,7 +50,7 @@ public class UsuarioController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var userOut = _repository.AddUserFromCredentials(dto);
+        var userOut = _usuarioService.AddUserFromCredentials(dto);
         return Ok(userOut);
     }
 
@@ -59,7 +59,7 @@ public class UsuarioController : ControllerBase
     public async Task<IActionResult> UpdateUsuario(int id, [FromBody] Usuario usuario)
     {
         // Optionally ensure id matches body if you have an Id property
-        var result = await _repository.PutUsuarioAsync(usuario);
+        var result = await _usuarioService.UpdateUsuario(usuario);
         if (!result) return BadRequest(new { message = "No se pudo actualizar el usuario" });
         return NoContent();
     }
@@ -68,7 +68,7 @@ public class UsuarioController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteUsuario(int id)
     {
-        var result = await _repository.DeleteUsuarioAsync(id);
+        var result = await _usuarioService.DeleteUsuario(id);
         if (!result) return NotFound();
         return NoContent();
     }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using BTB.Repository.Interfaces;
+using BTB.Service;
 using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,18 +10,18 @@ namespace API.Controllers;
 [Route("[controller]")]
 public class PartidaController : ControllerBase
 {
-    private readonly IPartidaRepository _repository;
+    private readonly IPartidaService _partidaService;
 
-    public PartidaController(IPartidaRepository repository)
+    public PartidaController(IPartidaService partidaService)
     {
-        _repository = repository;
+        _partidaService = partidaService;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetPartidas()
     {
-        var partidas = await _repository.GetPartidasAsync();
+        var partidas = await _partidaService.GetPartidasAsync();
         return Ok(partidas);
     }
 
@@ -29,7 +29,7 @@ public class PartidaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetPartida(string id)
     {
-        var partida = await _repository.GetPartidaByIdAsync(id);
+        var partida = await _partidaService.GetPartidaByIdAsync(id);
         if (partida == null) return NotFound();
         return Ok(partida);
     }
@@ -40,9 +40,8 @@ public class PartidaController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var partida = MapDtoToModel(dto);
-        await _repository.PostPartidaAsync(partida);
-        return CreatedAtAction(nameof(GetPartida), new { id = partida.IdPartida }, partida);
+        var created = await _partidaService.AddPartidaAsync(dto);
+        return CreatedAtAction(nameof(GetPartida), new { id = created.IdPartida }, created);
     }
 
     [HttpPut("{id}")]
@@ -50,9 +49,7 @@ public class PartidaController : ControllerBase
     public async Task<IActionResult> UpdatePartida(string id, [FromBody] PartidaDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var partida = MapDtoToModel(dto);
-        partida.IdPartida = id;
-        var result = await _repository.PutPartidaAsync(partida);
+        var result = await _partidaService.UpdatePartidaAsync(id, dto);
         if (!result) return NotFound();
         return NoContent();
     }
@@ -61,20 +58,10 @@ public class PartidaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeletePartida(string id)
     {
-        var result = await _repository.DeletePartidaAsync(id);
+        var result = await _partidaService.DeletePartidaAsync(id);
         if (!result) return NotFound();
         return NoContent();
     }
 
-    private Partida MapDtoToModel(PartidaDTOIn dto)
-    {
-        var partida = new Partida
-        {
-            IdPartida = dto.IdPartida ?? Guid.NewGuid().ToString(),
-            ArrUsuario = dto.ArrUsuario?.Select(u => new Usuario { Id = u.Id ?? 0, Nombre = u.Nombre ?? string.Empty, Correo = u.Correo ?? string.Empty }).ToArray() ?? new Usuario[0],
-            LstNodos = dto.LstNodos?.Select(n => new Nodo { IdNodo = (byte)n.IdNodo, ArrTropas = (n.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = n.DuenoNodo == null ? null : new Usuario { Id = n.DuenoNodo.Id ?? 0, Nombre = n.DuenoNodo.Nombre ?? string.Empty, Correo = n.DuenoNodo.Correo ?? string.Empty } }).ToList() ?? new List<Nodo>()
-        };
-
-        return partida;
-    }
+    // Mappings moved to service
 }
