@@ -12,9 +12,9 @@ namespace BTB.Repository
         /// </summary>
         private List<Usuario> lstUsuarios = new List<Usuario>();
         private int id = 1;
-        public UsuarioRepository(IConfiguration p_configuration)
+        public UsuarioRepository()
         {
-            _connectionString = p_configuration.GetConnectionString("MiSuperConectionString");
+            _connectionString = Environment.GetEnvironmentVariable("ConnectionString") ?? "";
         }
 
         public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
