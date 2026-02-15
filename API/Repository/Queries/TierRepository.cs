@@ -1,14 +1,19 @@
+using BTB.Data;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BTB.Repository
 {
     public class TierRepository : ITierRepository
     {
         private readonly List<Tier> _lst = new List<Tier>();
-        private int _id = 1;
+        private readonly BTBContext _context ;
 
-        public TierRepository() {}
+        public TierRepository(BTBContext context)
+        {
+            _context = context;
+        }
 
         public Task<bool> DeleteTierAsync(int id)
         {
@@ -26,13 +31,16 @@ namespace BTB.Repository
 
         public Task<List<Tier>> GetTiersAsync()
         {
-            return Task.FromResult(_lst.ToList());
+            var lista = _context.Tiers.AsQueryable<Tier>()
+            .Include( t => t.LstUsuarios);
+            
+            return Task.FromResult(lista.ToList());
         }
 
         public Task<bool> PostTierAsync(Tier tier)
         {
-            tier.Id = _id++;
-            _lst.Add(tier);
+            var newTier = _context.Tiers.Add(tier);
+            _context.SaveChanges(); 
             return Task.FromResult(true);
         }
 

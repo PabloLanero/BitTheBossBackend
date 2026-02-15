@@ -5,6 +5,8 @@ using BTB.Service;
 using BTB.Repository;
 using BTB.Repository.Interfaces;
 using Microsoft.OpenApi.Models;
+using BTB.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+string connexion = builder.Configuration.GetConnectionString("BTBDatabase");
+// Para EntityFramework
+builder.Services.AddDbContext<BTBContext>(options => 
+    options.UseMySQL(connexion));
+
 
 // Register application services / repositories
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -27,6 +34,8 @@ builder.Services.AddScoped<IPartidaService, PartidaService>();
 builder.Services.AddScoped<ITierService, TierService>();
 builder.Services.AddScoped<INodoService, NodoService>();
 builder.Services.AddScoped<IMovimientoService, MovimientoService>();
+
+
 
 // Configure JWT authentication
 var jwtSecret = builder.Configuration["JWT:SecretKey"] ?? string.Empty;
