@@ -21,7 +21,7 @@ namespace BTB.Repository
         {
             var newUsuario = new Usuario
             {
-                Id = id,
+                UsuarioId = id,
                 Nombre = userDtoIn.UserName,
                 Correo = userDtoIn.Email,
                 Password = userDtoIn.Password
@@ -41,7 +41,7 @@ namespace BTB.Repository
 
         public Task<bool> DeleteUsuarioAsync(int id)
         {
-            var existing = lstUsuarios.FirstOrDefault(u => u.Id == id);
+            var existing = lstUsuarios.FirstOrDefault(u => u.UsuarioId == id);
             if (existing == null) return Task.FromResult(false);
             lstUsuarios.Remove(existing);
             return Task.FromResult(true);
@@ -65,7 +65,7 @@ namespace BTB.Repository
 
         public Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            var usuario = lstUsuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = lstUsuarios.FirstOrDefault(u => u.UsuarioId == id);
             return Task.FromResult(usuario!);
         }
 
@@ -76,21 +76,21 @@ namespace BTB.Repository
 
         public Task<bool> PostUsuarioAsync(Usuario usuario)
         {
-            usuario.Id = id++;
+            usuario.UsuarioId = id++;
             lstUsuarios.Add(usuario);
             return Task.FromResult(true);
         }
 
         public Task<bool> PutUsuarioAsync(Usuario usuario)
         {
-            var existing = lstUsuarios.FirstOrDefault(u => u.Id == usuario.Id);
+            var existing = lstUsuarios.FirstOrDefault(u => u.UsuarioId == usuario.UsuarioId);
             if (existing == null) return Task.FromResult(false);
             existing.Nombre = usuario.Nombre;
             existing.Correo = usuario.Correo;
             existing.Password = usuario.Password;
             existing.Visible = usuario.Visible;
-            existing.Tier = usuario.Tier;
-            existing.LstPartidas = usuario.LstPartidas;
+            existing.TierId = usuario.TierId;
+            existing.Partidas = usuario.Partidas;
             return Task.FromResult(true);
         }
     }

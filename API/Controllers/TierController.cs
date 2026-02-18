@@ -3,6 +3,7 @@ using BTB.Service;
 using BTB.Entities.DTO;
 using BTB.Service.Common;
 using Microsoft.AspNetCore.Authorization;
+using BTB.Entities.Models;
 
 [ApiController]
 [Route("[controller]")]
@@ -58,7 +59,7 @@ public class TierController : ControllerBase
         try
         {
             var created = await _service.AddTierAsync(dto);
-            return CreatedAtAction(nameof(GetTier), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(CreateTier), new { id = created.Id }, created);
         }
         catch (ValidationException vex)
         {
@@ -72,13 +73,13 @@ public class TierController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateTier(int id, [FromBody] TierDTOIn dto)
+    public async Task<ActionResult<Tier>> UpdateTier(int id, [FromBody] TierDTOIn dto)
     {
         try
         {
-            var result = await _service.UpdateTierAsync(id, dto);
-            if (!result) return BadRequest(new { message = "No se pudo actualizar el tier" });
-            return NoContent();
+            Tier result = await _service.UpdateTierAsync(id, dto);
+            if (result == null) return BadRequest(new { message = "No se pudo actualizar el tier" });
+            return CreatedAtAction(nameof(UpdateTier), result);
         }
         catch (ValidationException vex)
         {

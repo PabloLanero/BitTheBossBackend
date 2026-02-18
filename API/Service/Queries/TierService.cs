@@ -18,8 +18,8 @@ namespace BTB.Service
         {
             if (dto == null) throw new ValidationException("TierDTOIn no puede ser null");
             var model = new Tier { Titulo = dto.Titulo ?? string.Empty, Visible = dto.Visible, FechaCreacion = System.DateTime.UtcNow };
-            await _repo.PostTierAsync(model);
-            return new TierDTOOut { Id = model.Id, Titulo = model.Titulo, Visible = model.Visible, FechaCreacion = model.FechaCreacion };
+            Tier newTier = await _repo.PostTierAsync(model);
+            return new TierDTOOut { Id = newTier.Id, Titulo = newTier.Titulo, Visible = newTier.Visible, FechaCreacion = newTier.FechaCreacion };
         }
 
         public Task<bool> DeleteTierAsync(int id)
@@ -41,11 +41,12 @@ namespace BTB.Service
             return lst.Select(t => new TierDTOOut { Id = t.Id, Titulo = t.Titulo, Visible = t.Visible, FechaCreacion = t.FechaCreacion }).ToList();
         }
 
-        public Task<bool> UpdateTierAsync(int id, TierDTOIn dto)
+        public async Task<Tier?> UpdateTierAsync(int id, TierDTOIn dto)
         {
             if (id <= 0) throw new ValidationException("Id inválido");
-            var model = new Tier { Id = id, Titulo = dto.Titulo ?? string.Empty, Visible = dto.Visible };
-            return _repo.PutTierAsync(model);
+            
+            Tier model = new Tier { Id = id, Titulo = dto.Titulo ?? string.Empty, Visible = dto.Visible };
+            return await _repo.PutTierAsync(model);
         }
     }
 }

@@ -32,25 +32,23 @@ namespace BTB.Repository
         public Task<List<Tier>> GetTiersAsync()
         {
             var lista = _context.Tiers.AsQueryable<Tier>()
-            .Include( t => t.LstUsuarios);
+            .Include( t => t.UsuarioId);
             
             return Task.FromResult(lista.ToList());
         }
 
-        public Task<bool> PostTierAsync(Tier tier)
+        public async Task<Tier?> PostTierAsync(Tier tier)
         {
-            var newTier = _context.Tiers.Add(tier);
-            _context.SaveChanges(); 
-            return Task.FromResult(true);
+            Tier newTier = _context.Tiers.Add(tier).Entity;
+            await _context.SaveChangesAsync(); 
+            return newTier;
         }
 
-        public Task<bool> PutTierAsync(Tier tier)
+        public async Task<Tier?> PutTierAsync(Tier tier)
         {
-            var existing = _lst.FirstOrDefault(t => t.Id == tier.Id);
-            if (existing == null) return Task.FromResult(false);
-            existing.Titulo = tier.Titulo;
-            existing.Visible = tier.Visible;
-            return Task.FromResult(true);
+            Tier newTier = _context.Update(tier).Entity;
+            await _context.SaveChangesAsync();
+            return newTier;
         }
     }
 }
