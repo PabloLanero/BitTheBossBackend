@@ -1,6 +1,8 @@
+using BTB.Data;
 using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BTB.Repository
 {
@@ -12,86 +14,86 @@ namespace BTB.Repository
         /// </summary>
         private List<Usuario> lstUsuarios = new List<Usuario>();
         private int id = 1;
-        public UsuarioRepository()
+        private readonly BTBContext _context;
+        public UsuarioRepository(BTBContext context)
         {
-            _connectionString = Environment.GetEnvironmentVariable("ConnectionString") ?? "";
+            _context = context;
         }
 
-        public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
+        public async Task<UserDTOOut> AddUserFromCredentials(UserDTOIn userDtoIn)
         {
             var newUsuario = new Usuario
             {
-                UsuarioId = id,
                 Nombre = userDtoIn.UserName,
                 Correo = userDtoIn.Email,
-                Password = userDtoIn.Password
+                Password = userDtoIn.Password,
+
+                Rol = BTB.Entities.Enums.Roles.Usuario
             };
-            lstUsuarios.Add(newUsuario);
+            Usuario user =  _context.Add(newUsuario).Entity;
+            await _context.SaveChangesAsync();
 
             var userOut = new UserDTOOut
             {
-                UserId = id,
-                UserName = newUsuario.Nombre,
-                Email = newUsuario.Correo,
-                Role = BTB.Entities.Enums.Roles.Usuario
+                UserId = user.UsuarioId,
+                UserName = user.Nombre,
+                Email = user.Correo,
+                Role = user.Rol
             };
-            id++;
             return userOut;
         }
 
-        public Task<bool> DeleteUsuarioAsync(int id)
+        public async Task<Usuario> DeleteUsuarioAsync(int id)
         {
-            var existing = lstUsuarios.FirstOrDefault(u => u.UsuarioId == id);
-            if (existing == null) return Task.FromResult(false);
-            lstUsuarios.Remove(existing);
-            return Task.FromResult(true);
+            Usuario usuario = _context.Remove<Usuario>(new Usuario{UsuarioId = id}).Entity;
+            return usuario;
         }
 
-        public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
+        public async Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
-            var user = lstUsuarios.FirstOrDefault(u => u.Correo == loginDtoIn.Email && u.Password == loginDtoIn.Password);
-            if (user == null) throw new Exception("Credenciales inválidas");
+            Usuario usuario = await _context.Usuarios.FindAsync(new Usuario{Correo = loginDtoIn.Email , Password= loginDtoIn.Password});
+            
+            if (usuario == null) throw new Exception("Credenciales inválidas");
 
             // In a real implementation, map to UserDTOOut with real id/role
             var userOut = new UserDTOOut
             {
-                UserId = 0,
-                UserName = user.Nombre,
-                Email = user.Correo,
-                Role = BTB.Entities.Enums.Roles.Usuario
+                UserId = usuario.UsuarioId,
+                UserName = usuario.Nombre,
+                Email = usuario.Correo,
+                Role = usuario.Rol
             };
             return userOut;
         }
 
-        public Task<Usuario> GetUsuarioByIdAsync(int id)
+        public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            var usuario = lstUsuarios.FirstOrDefault(u => u.UsuarioId == id);
-            return Task.FromResult(usuario!);
+            Usuario usuario = await _context.Usuarios.FindAsync(new Usuario{UsuarioId = id});
+            
+            if (usuario == null) throw new Exception("Credenciales inválidas");
+            
+            return usuario;
         }
 
-        public Task<List<Usuario>> GetUsuariosAsync()
+        public List<Usuario> GetUsuariosAsync()
         {
-            return Task.FromResult(lstUsuarios.ToList());
+            IEnumerable<Usuario> usuarios = _context.Usuarios.AsQueryable<Usuario>().Where(p => p.Visible);
+            return usuarios.ToList();
         }
 
-        public Task<bool> PostUsuarioAsync(Usuario usuario)
+        public async Task<Usuario> PostUsuarioAsync(Usuario newUsuario)
         {
-            usuario.UsuarioId = id++;
-            lstUsuarios.Add(usuario);
-            return Task.FromResult(true);
+            Usuario usuario =  _context.Usuarios.Add(newUsuario).Entity;
+            await _context.SaveChangesAsync();
+            return usuario;
         }
 
-        public Task<bool> PutUsuarioAsync(Usuario usuario)
+        public async Task<Usuario> PutUsuarioAsync(Usuario updateUsuario)
         {
-            var existing = lstUsuarios.FirstOrDefault(u => u.UsuarioId == usuario.UsuarioId);
-            if (existing == null) return Task.FromResult(false);
-            existing.Nombre = usuario.Nombre;
-            existing.Correo = usuario.Correo;
-            existing.Password = usuario.Password;
-            existing.Visible = usuario.Visible;
-            existing.TierId = usuario.TierId;
-            existing.Partidas = usuario.Partidas;
-            return Task.FromResult(true);
+            Usuario usuario = _context.Usuarios.Update(updateUsuario).Entity;
+            await _context.SaveChangesAsync();
+            return usuario;
         }
+
     }
 }

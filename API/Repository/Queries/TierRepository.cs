@@ -7,7 +7,7 @@ namespace BTB.Repository
 {
     public class TierRepository : ITierRepository
     {
-        private readonly List<Tier> _lst = new List<Tier>();
+        
         private readonly BTBContext _context ;
 
         public TierRepository(BTBContext context)
@@ -15,26 +15,24 @@ namespace BTB.Repository
             _context = context;
         }
 
-        public Task<bool> DeleteTierAsync(int id)
+        public async Task<bool> DeleteTierAsync(int id)
         {
-            var existing = _lst.FirstOrDefault(t => t.Id == id);
-            if (existing == null) return Task.FromResult(false);
-            _lst.Remove(existing);
-            return Task.FromResult(true);
+            Tier tier = _context.Tiers.Remove(new Tier{Id=id}).Entity;
+            return tier != null;
         }
 
-        public Task<Tier?> GetTierByIdAsync(int id)
+        public async Task<Tier?> GetTierByIdAsync(int id)
         {
-            var t = _lst.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult(t);
+            Tier tier = await _context.Tiers.FindAsync(id) ?? new Tier();
+            return tier;
         }
 
-        public Task<List<Tier>> GetTiersAsync()
+        public async Task<List<Tier>> GetTiersAsync()
         {
             var lista = _context.Tiers.AsQueryable<Tier>()
-            .Include( t => t.UsuarioId);
-            
-            return Task.FromResult(lista.ToList());
+            .Include( t => t.UsuarioId );
+            await _context.SaveChangesAsync(); 
+            return lista.ToList();
         }
 
         public async Task<Tier?> PostTierAsync(Tier tier)

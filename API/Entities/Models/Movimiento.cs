@@ -8,6 +8,7 @@ namespace BTB.Entities.Models
         public int Id {get; set; }
         public Tropa Tropa {get;set; } = new Tropa();
         public Nodo NodoDestino {get; set; } = new Nodo();
+        public Partida Partida {get;set; } = new Partida();
         public Movimiento() {}
     }
 }

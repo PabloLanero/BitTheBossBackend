@@ -14,10 +14,10 @@ namespace BTB.Service
             _repository = repository;
         }
 
-        public Task<bool> AddUsuario(Usuario p_usuario)
+        public async Task<bool> AddUsuario(Usuario p_usuario)
         {
             if (p_usuario == null) throw new ArgumentNullException(nameof(p_usuario));
-            return _repository.PostUsuarioAsync(p_usuario);
+            return await _repository.PostUsuarioAsync(p_usuario);
         }
 
         public Task<bool> DeleteUsuario(int p_id)
