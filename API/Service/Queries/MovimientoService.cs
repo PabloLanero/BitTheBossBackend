@@ -37,7 +37,7 @@ namespace BTB.Service
 
         public async Task<List<MovimientoDTOOut>> GetMovimientosAsync()
         {
-            var lst = await _repo.GetMovimientosAsync();
+            var lst =  _repo.GetMovimientosAsync();
             return lst.Select(m => new MovimientoDTOOut { Id = m.Id, Tropa = new TropaDTOOut { Id = m.Tropa.Id, Nombre = m.Tropa.Nombre, Vida = m.Tropa.Vida, Damage = m.Tropa.Damage }, NodoDestinoId = m.NodoDestino.IdNodo }).ToList();
         }
     }

@@ -44,11 +44,11 @@ namespace BTB.Service
 
         public async Task<List<PartidaDTOOut>> GetPartidasAsync()
         {
-            var lst = await _repository.GetPartidasAsync();
+            var lst =  _repository.GetPartidasAsync();
             return lst.Select(MapModelToDto).ToList();
         }
 
-        public Task<bool> UpdatePartidaAsync(string id, PartidaDTOIn dto)
+        public async Task<PartidaDTOOut> UpdatePartidaAsync(string id, PartidaDTOIn dto)
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ValidationException("Id inválido para actualizar partida.");
             var existing = _repository.GetPartidaByIdAsync(id).GetAwaiter().GetResult();
@@ -56,7 +56,9 @@ namespace BTB.Service
 
             var model = MapDtoToModel(dto);
             model.IdPartida = id;
-            return _repository.PutPartidaAsync(model);
+            Partida partida = await _repository.PutPartidaAsync(model);
+            PartidaDTOOut partidaDTOOut = MapModelToDto(partida);
+            return partidaDTOOut;
         }
 
         private Partida MapDtoToModel(PartidaDTOIn dto)

@@ -1,49 +1,53 @@
+using BTB.Data;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BTB.Repository
 {
     public class PartidaRepository : IPartidaRepository
     {
-        private readonly List<Partida> _lst = new List<Partida>();
+        private readonly BTBContext _context;
 
-        public PartidaRepository()
+        public PartidaRepository(BTBContext context)
         {
+            _context = context;
         }
 
-        public Task<bool> DeletePartidaAsync(string id)
+        public async Task<bool> DeletePartidaAsync(string id)
         {
-            var existing = _lst.FirstOrDefault(p => p.IdPartida == id);
-            if (existing == null) return Task.FromResult(false);
-            _lst.Remove(existing);
-            return Task.FromResult(true);
+            _context.Partidas.Remove(new Partida{IdPartida=id});
+            await _context.SaveChangesAsync();
+            // Si todo va bien
+            return true;
         }
 
-        public Task<Partida?> GetPartidaByIdAsync(string id)
+        public async Task<Partida?> GetPartidaByIdAsync(string id)
         {
-            var partida = _lst.FirstOrDefault(p => p.IdPartida == id);
-            return Task.FromResult(partida);
+            Partida partida = await _context.Partidas.FindAsync(new Partida{IdPartida= id});
+            return partida;
         }
 
-        public Task<List<Partida>> GetPartidasAsync()
+        public List<Partida> GetPartidasAsync()
         {
-            return Task.FromResult(_lst.ToList());
+            IEnumerable<Partida> partidas =  _context.Partidas.AsQueryable<Partida>()
+            .Include(p => p.ArrUsuario).Include(p => p.LstNodos).Include(p => p.movimientos);
+            return partidas.ToList();
         }
 
-        public Task<bool> PostPartidaAsync(Partida partida)
+        public async Task<Partida> PostPartidaAsync(Partida partida)
         {
-            if (string.IsNullOrWhiteSpace(partida.IdPartida)) partida.IdPartida = Guid.NewGuid().ToString();
-            _lst.Add(partida);
-            return Task.FromResult(true);
+            Partida newPartida =  _context.Partidas.Add(partida).Entity;
+            await _context.SaveChangesAsync();
+            return newPartida;
         }
 
-        public Task<bool> PutPartidaAsync(Partida partida)
+        public async Task<Partida> PutPartidaAsync(Partida partida)
         {
-            var existing = _lst.FirstOrDefault(p => p.IdPartida == partida.IdPartida);
-            if (existing == null) return Task.FromResult(false);
-            existing.ArrUsuario = partida.ArrUsuario;
-            existing.LstNodos = partida.LstNodos;
-            return Task.FromResult(true);
+            Partida newPartida = _context.Partidas.Update(partida).Entity;
+            await _context.SaveChangesAsync();
+            
+            return newPartida;
         }
     }
 }

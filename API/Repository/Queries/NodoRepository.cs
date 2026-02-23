@@ -1,48 +1,51 @@
+using BTB.Data;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BTB.Repository
 {
     public class NodoRepository : INodoRepository
     {
-        private readonly List<Nodo> _lst = new List<Nodo>();
-        private int _id = 1;
-
-        public NodoRepository() {}
-
-        public Task<bool> DeleteNodoAsync(int id)
+        private readonly BTBContext _context;
+        public NodoRepository(BTBContext context)
         {
-            var existing = _lst.FirstOrDefault(n => n.IdNodo == id);
-            if (existing == null) return Task.FromResult(false);
-            _lst.Remove(existing);
-            return Task.FromResult(true);
+            _context = context;
         }
 
-        public Task<Nodo?> GetNodoByIdAsync(int id)
+        public async Task<bool> DeleteNodoAsync(int id)
         {
-            var n = _lst.FirstOrDefault(x => x.IdNodo == id);
-            return Task.FromResult(n);
+            _context.Nodos.Remove(new Nodo{IdNodo=(byte)id});
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<List<Nodo>> GetNodosAsync()
+        public async Task<Nodo?> GetNodoByIdAsync(int id)
         {
-            return Task.FromResult(_lst.ToList());
+            Nodo nodo = await _context.Nodos.FindAsync(new Nodo{IdNodo = (byte)id});
+            return nodo;
         }
 
-        public Task<bool> PostNodoAsync(Nodo nodo)
+        public List<Nodo> GetNodosAsync()
         {
-            nodo.IdNodo = (byte)_id++;
-            _lst.Add(nodo);
-            return Task.FromResult(true);
+            IEnumerable<Nodo> nodos = _context.Nodos.AsQueryable()
+            .Include(p => p.DuenoNodo).Include(p => p.ArrTropas);
+
+            return nodos.ToList();
         }
 
-        public Task<bool> PutNodoAsync(Nodo nodo)
+        public async Task<Nodo> PostNodoAsync(Nodo nodo)
         {
-            var existing = _lst.FirstOrDefault(n => n.IdNodo == nodo.IdNodo);
-            if (existing == null) return Task.FromResult(false);
-            existing.ArrTropas = nodo.ArrTropas;
-            existing.DuenoNodo = nodo.DuenoNodo;
-            return Task.FromResult(true);
+            Nodo newNodo = _context.Nodos.Add(nodo).Entity;
+            await _context.SaveChangesAsync();
+            return newNodo;
+        }
+
+        public async Task<Nodo> PutNodoAsync(Nodo nodo)
+        {
+            Nodo newNodo = _context.Nodos.Update(nodo).Entity;
+            await _context.SaveChangesAsync();
+            return newNodo;
         }
     }
 }

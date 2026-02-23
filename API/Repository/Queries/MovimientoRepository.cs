@@ -1,48 +1,51 @@
+using BTB.Data;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BTB.Repository
 {
     public class MovimientoRepository : IMovimientoRepository
     {
-        private readonly List<Movimiento> _lst = new List<Movimiento>();
-        private int _id = 1;
+        private readonly BTBContext _context;
 
-        public MovimientoRepository() {}
-
-        public Task<bool> DeleteMovimientoAsync(int id)
+        public MovimientoRepository(BTBContext context)
         {
-            var existing = _lst.FirstOrDefault(m => m.Id == id);
-            if (existing == null) return Task.FromResult(false);
-            _lst.Remove(existing);
-            return Task.FromResult(true);
+            _context = context;
         }
 
-        public Task<Movimiento?> GetMovimientoByIdAsync(int id)
+        public async Task<bool> DeleteMovimientoAsync(int id)
         {
-            var m = _lst.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult(m);
+            _context.Movimientos.Remove(new Movimiento{Id = id});
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<List<Movimiento>> GetMovimientosAsync()
+        public async Task<Movimiento?> GetMovimientoByIdAsync(int id)
         {
-            return Task.FromResult(_lst.ToList());
+            Movimiento movimiento = await _context.Movimientos.FindAsync(new Movimiento { Id = id });
+            return movimiento;
         }
 
-        public Task<bool> PostMovimientoAsync(Movimiento movimiento)
+        public List<Movimiento> GetMovimientosAsync()
         {
-            movimiento.Id = _id++;
-            _lst.Add(movimiento);
-            return Task.FromResult(true);
+            IEnumerable<Movimiento> movimientos = _context.Movimientos.AsQueryable<Movimiento>()
+            .Include(p => p.Partida).Include(p => p.NodoDestino).Include(p => p.Tropa);
+            return movimientos.ToList();
         }
 
-        public Task<bool> PutMovimientoAsync(Movimiento movimiento)
+        public async Task<Movimiento> PostMovimientoAsync(Movimiento movimiento)
         {
-            var existing = _lst.FirstOrDefault(m => m.Id == movimiento.Id);
-            if (existing == null) return Task.FromResult(false);
-            existing.Tropa = movimiento.Tropa;
-            existing.NodoDestino = movimiento.NodoDestino;
-            return Task.FromResult(true);
+            Movimiento newMovimiento = _context.Movimientos.Add(movimiento).Entity;
+            await _context.SaveChangesAsync();
+            return newMovimiento;
+        }
+
+        public async Task<Movimiento> PutMovimientoAsync(Movimiento movimiento)
+        {
+            Movimiento newMovimiento = _context.Movimientos.Update(movimiento).Entity;
+            await _context.SaveChangesAsync();
+            return newMovimiento;
         }
     }
 }
