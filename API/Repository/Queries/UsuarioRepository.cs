@@ -43,10 +43,10 @@ namespace BTB.Repository
             return userOut;
         }
 
-        public async Task<Usuario> DeleteUsuarioAsync(int id)
+        public async Task<bool> DeleteUsuarioAsync(int id)
         {
             Usuario usuario = _context.Remove<Usuario>(new Usuario{UsuarioId = id}).Entity;
-            return usuario;
+            return usuario != null;
         }
 
         public async Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn)

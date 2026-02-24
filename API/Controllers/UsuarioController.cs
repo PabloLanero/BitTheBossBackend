@@ -4,6 +4,7 @@ using BTB.Entities.Models;
 using BTB.Entities.DTO;
 using Microsoft.AspNetCore.Authorization;
 using BTB.Service.Common;
+using System.Threading.Tasks;
 
 namespace API.Controllers;
 
@@ -24,7 +25,7 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            var usuarios = await _usuarioService.GetUsuariosAsync();
+            var usuarios = _usuarioService.GetUsuariosAsync();
             return Ok(usuarios);
         }
         catch (ValidationException vex)
@@ -71,12 +72,12 @@ public class UsuarioController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public IActionResult CreateUsuario([FromBody] UserDTOIn dto)
+    public async Task<IActionResult> CreateUsuario([FromBody] UserDTOIn dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         try
         {
-            var userOut = _usuarioService.AddUserFromCredentials(dto);
+            var userOut = await _usuarioService.AddUserFromCredentials(dto);
             return CreatedAtAction(nameof(GetUsuario), new { id = userOut.UserId ?? 0 }, userOut);
         }
         catch (ValidationException vex)
@@ -124,7 +125,7 @@ public class UsuarioController : ControllerBase
         try
         {
             var result = await _usuarioService.UpdateUsuario(usuario);
-            if (!result) return BadRequest(new { message = "No se pudo actualizar el usuario" });
+            if (result.UsuarioId <=0) return BadRequest(new { message = "No se pudo actualizar el usuario" });
             return NoContent();
         }
         catch (ValidationException vex)

@@ -100,7 +100,7 @@ public class PartidaController : ControllerBase
         try
         {
             var result = await _partidaService.UpdatePartidaAsync(id, dto);
-            if (!result) return NotFound();
+            if (string.IsNullOrWhiteSpace(result.IdPartida)) return NotFound();
             return NoContent();
         }
         catch (BTB.Service.Common.NotFoundException nf)

@@ -5,8 +5,8 @@ namespace BTB.Service
 {
     public interface IAuthService
     {
-        public string Login(LoginDtoIn userDtoIn);
-        public string Register(UserDTOIn userDtoIn);
+        public Task<string> Login(LoginDtoIn userDtoIn);
+        public Task<string> Register(UserDTOIn userDtoIn);
         public string GenerateToken(UserDTOOut userDTOOut);
         public bool HasAccessToResource(int requestedUserID, ClaimsPrincipal user);
 

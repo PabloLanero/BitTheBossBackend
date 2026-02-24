@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Serialization;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using BTB.Entities.DTO;
 using BTB.Entities.Enums;
 using BTB.Repository.Interfaces;
@@ -23,13 +24,13 @@ namespace BTB.Service
             _usuarioService = usuarioService;
         }
 
-        public string Login(LoginDtoIn loginDtoIn) {
-            var user = _usuarioService.GetUserFromCredentials(loginDtoIn);
+        public async Task<string> Login(LoginDtoIn loginDtoIn) {
+            var user = await _usuarioService.GetUserFromCredentials(loginDtoIn);
             return GenerateToken(user);
         }
 
-        public string Register(UserDTOIn userDtoIn) {
-            var user = _usuarioService.AddUserFromCredentials(userDtoIn);
+        public async Task<string> Register(UserDTOIn userDtoIn) {
+            var user = await _usuarioService.AddUserFromCredentials(userDtoIn);
             return GenerateToken(user);
         }
 

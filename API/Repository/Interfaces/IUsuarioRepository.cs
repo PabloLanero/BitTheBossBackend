@@ -9,7 +9,7 @@ namespace BTB.Repository.Interfaces
         public Task<Usuario> GetUsuarioByIdAsync(int id);
         public Task<Usuario> PostUsuarioAsync(Usuario usuario);
         public Task<Usuario> PutUsuarioAsync(Usuario usuario);
-        public Task<Usuario> DeleteUsuarioAsync(int id);
+        public Task<bool> DeleteUsuarioAsync(int id);
         public Task<UserDTOOut> AddUserFromCredentials(UserDTOIn userDtoIn);
         public Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn);
     }

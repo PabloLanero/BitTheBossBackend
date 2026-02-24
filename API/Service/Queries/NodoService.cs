@@ -17,9 +17,9 @@ namespace BTB.Service
         public async Task<NodoDTOOut> AddNodoAsync(NodoDTOIn dto)
         {
             if (dto == null) throw new ValidationException("NodoDTOIn no puede ser null");
-            var model = new Nodo { IdNodo = (byte)dto.IdNodo, ArrTropas = (dto.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = dto.DuenoNodo == null ? null : new Usuario { UsuarioId = dto.DuenoNodo.Id ?? 0, Nombre = dto.DuenoNodo.Nombre ?? string.Empty, Correo = dto.DuenoNodo.Correo ?? string.Empty } };
-            await _repo.PostNodoAsync(model);
-            return new NodoDTOOut { IdNodo = model.IdNodo, ArrTropas = model.ArrTropas?.Select(t => new TropaDTOOut { Id = t.Id, Nombre = t.Nombre, Vida = t.Vida, Damage = t.Damage }).ToList() ?? new List<TropaDTOOut>(), DuenoNodo = model.DuenoNodo == null ? null : new UsuarioRefDTOOut { Id = model.DuenoNodo.UsuarioId, Nombre = model.DuenoNodo.Nombre, Correo = model.DuenoNodo.Correo } };
+            // var model = new Nodo { IdNodo = (byte)dto.IdNodo, ArrTropas = (dto.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = dto.DuenoNodo == null ? null : new Usuario { UsuarioId = dto.DuenoNodo.Id ?? 0, Nombre = dto.DuenoNodo.Nombre ?? string.Empty, Correo = dto.DuenoNodo.Correo ?? string.Empty } };
+            Nodo newNodo=  await _repo.PostNodoAsync(dto);
+            return new NodoDTOOut { IdNodo = newNodo.IdNodo, ArrTropas = newNodo.ArrTropas?.Select(t => new TropaDTOOut { Id = t.Id, Nombre = t.Nombre, Vida = t.Vida, Damage = t.Damage }).ToList() ?? new List<TropaDTOOut>(), DuenoNodo = newNodo.DuenoNodo == null ? null : new UsuarioRefDTOOut { Id = newNodo.DuenoNodo.UsuarioId, Nombre = newNodo.DuenoNodo.Nombre, Correo = newNodo.DuenoNodo.Correo } };
         }
 
         public Task<bool> DeleteNodoAsync(int id)
@@ -44,8 +44,8 @@ namespace BTB.Service
         public async Task<NodoDTOOut> UpdateNodoAsync(int id, NodoDTOIn dto)
         {
             if (id <= 0) throw new ValidationException("Id inválido para actualizar nodo");
-            var model = new Nodo { IdNodo = (byte)id, ArrTropas = (dto.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = dto.DuenoNodo == null ? null : new Usuario { UsuarioId = dto.DuenoNodo.Id ?? 0, Nombre = dto.DuenoNodo.Nombre ?? string.Empty, Correo = dto.DuenoNodo.Correo ?? string.Empty } };
-            Nodo nodo = await _repo.PutNodoAsync(model);
+            // var model = new Nodo { IdNodo = (byte)id, ArrTropas = (dto.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = dto.DuenoNodo == null ? null : new Usuario { UsuarioId = dto.DuenoNodo.Id ?? 0, Nombre = dto.DuenoNodo.Nombre ?? string.Empty, Correo = dto.DuenoNodo.Correo ?? string.Empty } };
+            Nodo nodo = await _repo.PutNodoAsync(dto);
             NodoDTOOut nodoDTOOut = new NodoDTOOut
             {
                 IdNodo= nodo.IdNodo,

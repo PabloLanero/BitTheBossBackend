@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BTB.Entities.Models;
 
 namespace BTB.Entities.DTO
 {
@@ -8,8 +9,8 @@ namespace BTB.Entities.DTO
         [Required]
         public string? IdPartida { get; set; }
 
-        public List<UsuarioRefDTO>? ArrUsuario { get; set; } = new List<UsuarioRefDTO>();
+        public int[]? ArrUsuario { get; set; } = new int[2];
 
-        public List<NodoDTOIn>? LstNodos { get; set; } = new List<NodoDTOIn>();
+        public List<int>? LstNodos { get; set; } = new List<int>();
     }
 }

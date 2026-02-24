@@ -1,4 +1,5 @@
 using BTB.Data;
+using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -34,16 +35,26 @@ namespace BTB.Repository
             return nodos.ToList();
         }
 
-        public async Task<Nodo> PostNodoAsync(Nodo nodo)
+        public async Task<Nodo> PostNodoAsync(NodoDTOIn dto)
         {
-            Nodo newNodo = _context.Nodos.Add(nodo).Entity;
+            Nodo newNodo = _context.Nodos.Add(new Nodo{ArrTropas = [
+                new Tropa {Id= dto.ArrTropas[0]},
+                new Tropa {Id= dto.ArrTropas[1]}
+            ],
+            DuenoNodo = new Usuario{UsuarioId = dto.idUsuario}
+            }).Entity;
             await _context.SaveChangesAsync();
             return newNodo;
         }
 
-        public async Task<Nodo> PutNodoAsync(Nodo nodo)
+        public async Task<Nodo> PutNodoAsync(NodoDTOIn dto)
         {
-            Nodo newNodo = _context.Nodos.Update(nodo).Entity;
+            Nodo newNodo = _context.Nodos.Update(new Nodo{ArrTropas = [
+                new Tropa {Id= dto.ArrTropas[0]},
+                new Tropa {Id= dto.ArrTropas[1]}
+            ],
+            DuenoNodo = new Usuario{UsuarioId = dto.idUsuario}
+            }).Entity;
             await _context.SaveChangesAsync();
             return newNodo;
         }

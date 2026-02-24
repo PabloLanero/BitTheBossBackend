@@ -77,7 +77,7 @@ public class NodoController : ControllerBase
         try
         {
             var result = await _service.UpdateNodoAsync(id, dto);
-            if (!result) return BadRequest(new { message = "No se pudo actualizar el nodo" });
+            if (result.IdNodo <= 0) return BadRequest(new { message = "No se pudo actualizar el nodo" });
             return NoContent();
         }
         catch (ValidationException vex)

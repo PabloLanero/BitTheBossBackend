@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BTB.Entities.DTO;
 using BTB.Entities.Models;
 using BTB.Repository.Interfaces;
@@ -8,23 +9,27 @@ namespace BTB.Service
     public class PartidaService : IPartidaService
     {
         private readonly IPartidaRepository _repository;
+        private readonly INodoService _nodoService;
+        private readonly IUsuarioService _usuarioService;
 
-        public PartidaService(IPartidaRepository repository)
+        public PartidaService(IPartidaRepository repository, INodoService nodoService, IUsuarioService usuarioService)
         {
             _repository = repository;
+            _nodoService = nodoService;
+            _usuarioService = usuarioService;
         }
 
         public async Task<PartidaDTOOut> AddPartidaAsync(PartidaDTOIn dto)
         {
             if (dto == null) throw new ValidationException("PartidaDTOIn no puede ser null");
             if (dto.ArrUsuario == null || !dto.ArrUsuario.Any()) throw new ValidationException("La partida debe contener al menos un usuario.");
-            if (dto.LstNodos != null)
-            {
-                var duplicate = dto.LstNodos.GroupBy(n => n.IdNodo).Any(g => g.Count() > 1);
-                if (duplicate) throw new ValidationException("Hay nodos duplicados (IdNodo debe ser único).");
-            }
+            // if (dto.LstNodos != null)
+            // {
+            //     var duplicate = dto.LstNodos.GroupBy(n => n.IdNodo).Any(g => g.Count() > 1);
+            //     if (duplicate) throw new ValidationException("Hay nodos duplicados (IdNodo debe ser único).");
+            // }
 
-            var model = MapDtoToModel(dto);
+            var model = await MapDtoToModel(dto);
             await _repository.PostPartidaAsync(model);
             return MapModelToDto(model);
         }
@@ -54,21 +59,21 @@ namespace BTB.Service
             var existing = _repository.GetPartidaByIdAsync(id).GetAwaiter().GetResult();
             if (existing == null) throw new NotFoundException($"Partida con id {id} no encontrada.");
 
-            var model = MapDtoToModel(dto);
-            model.IdPartida = id;
+            var model = await MapDtoToModel(dto);
+            
             Partida partida = await _repository.PutPartidaAsync(model);
             PartidaDTOOut partidaDTOOut = MapModelToDto(partida);
             return partidaDTOOut;
         }
 
-        private Partida MapDtoToModel(PartidaDTOIn dto)
+        private async Task<Partida> MapDtoToModel(PartidaDTOIn dto)
         {
             var partida = new Partida
             {
                 IdPartida = dto.IdPartida ?? Guid.NewGuid().ToString(),
-                ArrUsuario = dto.ArrUsuario?.Select(u => new Usuario { UsuarioId = u.Id ?? 0, Nombre = u.Nombre ?? string.Empty, Correo = u.Correo ?? string.Empty }).ToArray() ?? new Usuario[0],
-                LstNodos = dto.LstNodos?.Select(n => new Nodo { IdNodo = (byte)n.IdNodo, ArrTropas = (n.ArrTropas ?? new List<TropaDTOIn>()).Select(t => new Tropa { Nombre = t.Nombre ?? string.Empty, Vida = t.Vida, Damage = t.Damage }).ToArray(), DuenoNodo = n.DuenoNodo == null ? null : new Usuario { UsuarioId = n.DuenoNodo.Id ?? 0, Nombre = n.DuenoNodo.Nombre ?? string.Empty, Correo = n.DuenoNodo.Correo ?? string.Empty } }).ToList() ?? new List<Nodo>()
+                ArrUsuario = [await _usuarioService.GetUsuarioById(dto.ArrUsuario[0]),await _usuarioService.GetUsuarioById(dto.ArrUsuario[1])],
             };
+            dto.LstNodos.ForEach(async nodo => partida.LstNodos.Add(await _nodoService.GetNodoByIdAsync(nodo)));
 
             return partida;
         }

@@ -2,6 +2,7 @@ using BTB.Entities.Models;
 using BTB.Entities.DTO;
 using BTB.Repository.Interfaces;
 using BTB.Service.Common;
+using System.Threading.Tasks;
 
 namespace BTB.Service
 {
@@ -14,16 +15,16 @@ namespace BTB.Service
             _repository = repository;
         }
 
-        public async Task<bool> AddUsuario(Usuario p_usuario)
+        public async Task<Usuario> AddUsuario(Usuario p_usuario)
         {
             if (p_usuario == null) throw new ArgumentNullException(nameof(p_usuario));
             return await _repository.PostUsuarioAsync(p_usuario);
         }
 
-        public Task<bool> DeleteUsuario(int p_id)
+        public async Task<bool> DeleteUsuario(int p_id)
         {
-            if (p_id <= 0) return Task.FromResult(false);
-            return _repository.DeleteUsuarioAsync(p_id);
+            if (p_id <= 0) return false;
+            return await _repository.DeleteUsuarioAsync(p_id);
         }
 
         public Task<Usuario> GetUsuarioById(int p_id)
@@ -31,37 +32,37 @@ namespace BTB.Service
             return _repository.GetUsuarioByIdAsync(p_id);
         }
 
-        public Task<List<Usuario>> GetUsuariosAsync()
+        public List<Usuario> GetUsuariosAsync()
         {
             return _repository.GetUsuariosAsync();
         }
 
-        public Task<bool> UpdateUsuario(Usuario p_usuario)
+        public Task<Usuario> UpdateUsuario(Usuario p_usuario)
         {
             if (p_usuario == null) throw new ArgumentNullException(nameof(p_usuario));
             return _repository.PutUsuarioAsync(p_usuario);
         }
 
-        public UserDTOOut AddUserFromCredentials(UserDTOIn userDtoIn)
+        public async Task<UserDTOOut> AddUserFromCredentials(UserDTOIn userDtoIn)
         {
             if (userDtoIn == null) throw new ValidationException("Datos de usuario inválidos");
 
             // simple business validation: email uniqueness
-            var all = _repository.GetUsuariosAsync().GetAwaiter().GetResult();
+            var all =  _repository.GetUsuariosAsync();
             if (all.Any(u => string.Equals(u.Correo, userDtoIn.Email, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new BusinessException("Ya existe un usuario con ese correo");
             }
-
-            return _repository.AddUserFromCredentials(userDtoIn);
+            
+            return await _repository.AddUserFromCredentials(userDtoIn);
         }
 
-        public UserDTOOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
+        public async Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
             if (loginDtoIn == null) throw new ValidationException("Credenciales inválidas");
             try
             {
-                return _repository.GetUserFromCredentials(loginDtoIn);
+                return await _repository.GetUserFromCredentials(loginDtoIn);
             }
             catch (Exception ex)
             {
