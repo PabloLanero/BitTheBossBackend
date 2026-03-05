@@ -6,7 +6,7 @@ namespace BTB.Entities.Models
     {
         [Key]
         public string IdPartida { get;set; } = "";
-        public Usuario[] ArrUsuario {get;set;} = new Usuario[2];
+        public List<Usuario> ArrUsuario {get;set;} = new List<Usuario>();
         public List<Nodo> LstNodos {get;set;} = new List<Nodo>();
         public List<Movimiento> movimientos = new List<Movimiento>();
         public Partida () {}

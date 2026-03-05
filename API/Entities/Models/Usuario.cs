@@ -21,8 +21,9 @@ namespace BTB.Entities.Models
         public DateTime FechaCreacion {get; set; } = DateTime.Now;
         [NotNull]
         public string Rol { get;set; } = string.Empty;
-        [ForeignKey("Usuario_Tier")]
-        public Tier Tier {get;set;} = new Tier();
+        
+        public int TierId {get; set; } // Por EFCore
+        public Tier Tier {get;set;} = new Tier(); 
         public List<Partida>? Partidas {get; set; } = new List<Partida>();
         public Usuario(){}
 

@@ -64,6 +64,20 @@ namespace API.Migrations
                     b.HasIndex("PartidaIdPartida");
 
                     b.ToTable("Nodos");
+
+                    b.HasData(
+                        new
+                        {
+                            IdNodo = (byte)1
+                        },
+                        new
+                        {
+                            IdNodo = (byte)2
+                        },
+                        new
+                        {
+                            IdNodo = (byte)3
+                        });
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Partida", b =>
@@ -74,6 +88,16 @@ namespace API.Migrations
                     b.HasKey("IdPartida");
 
                     b.ToTable("Partidas");
+
+                    b.HasData(
+                        new
+                        {
+                            IdPartida = "partida-001"
+                        },
+                        new
+                        {
+                            IdPartida = "partida-002"
+                        });
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Tier", b =>
@@ -97,19 +121,19 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
-                            FechaCreacion = new DateTime(2026, 2, 22, 17, 16, 30, 394, DateTimeKind.Local).AddTicks(9012),
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6878),
                             Titulo = "Bronce"
                         },
                         new
                         {
                             Id = 2,
-                            FechaCreacion = new DateTime(2026, 2, 22, 17, 16, 30, 394, DateTimeKind.Local).AddTicks(9047),
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6924),
                             Titulo = "Plata"
                         },
                         new
                         {
                             Id = 3,
-                            FechaCreacion = new DateTime(2026, 2, 22, 17, 16, 30, 394, DateTimeKind.Local).AddTicks(9049),
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6926),
                             Titulo = "Oro"
                         });
                 });
@@ -123,9 +147,6 @@ namespace API.Migrations
                     b.Property<float>("Damage")
                         .HasColumnType("float");
 
-                    b.Property<byte?>("NodoIdNodo")
-                        .HasColumnType("tinyint unsigned");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -135,9 +156,30 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NodoIdNodo");
-
                     b.ToTable("Tropas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Damage = 50f,
+                            Nombre = "Triangulo",
+                            Vida = 100f
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Damage = 50f,
+                            Nombre = "Cuadrado",
+                            Vida = 100f
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Damage = 50f,
+                            Nombre = "Circulo",
+                            Vida = 100f
+                        });
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Usuario", b =>
@@ -165,7 +207,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Usuario_Tier")
+                    b.Property<int>("TierId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Visible")
@@ -173,12 +215,58 @@ namespace API.Migrations
 
                     b.HasKey("UsuarioId");
 
-                    b.HasIndex("Usuario_Tier");
+                    b.HasIndex("TierId");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            UsuarioId = 1,
+                            Correo = "Jhon@gmail.com",
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4087),
+                            Nombre = "Ejemplo",
+                            Password = "asd",
+                            Rol = "Admin",
+                            TierId = 1,
+                            Visible = true
+                        },
+                        new
+                        {
+                            UsuarioId = 2,
+                            Correo = "Mary@gmail.com",
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4098),
+                            Nombre = "Ejemplo2",
+                            Password = "asdasd",
+                            Rol = "Admin",
+                            TierId = 1,
+                            Visible = true
+                        },
+                        new
+                        {
+                            UsuarioId = 3,
+                            Correo = "player1@gmail.com",
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099),
+                            Nombre = "Player1",
+                            Password = "pass123",
+                            Rol = "Usuario",
+                            TierId = 2,
+                            Visible = true
+                        },
+                        new
+                        {
+                            UsuarioId = 4,
+                            Correo = "player2@gmail.com",
+                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099),
+                            Nombre = "Player2",
+                            Password = "pass456",
+                            Rol = "Usuario",
+                            TierId = 3,
+                            Visible = true
+                        });
                 });
 
-            modelBuilder.Entity("PartidaUsuario", b =>
+            modelBuilder.Entity("UsuarioPartida", b =>
                 {
                     b.Property<int>("ArrUsuarioUsuarioId")
                         .HasColumnType("int");
@@ -190,7 +278,7 @@ namespace API.Migrations
 
                     b.HasIndex("PartidasIdPartida");
 
-                    b.ToTable("PartidaUsuario");
+                    b.ToTable("UsuarioPartida");
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Movimiento", b =>
@@ -202,7 +290,7 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.HasOne("BTB.Entities.Models.Partida", "Partida")
-                        .WithMany()
+                        .WithMany("movimientos")
                         .HasForeignKey("PartidaIdPartida")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -233,25 +321,18 @@ namespace API.Migrations
                     b.Navigation("DuenoNodo");
                 });
 
-            modelBuilder.Entity("BTB.Entities.Models.Tropa", b =>
-                {
-                    b.HasOne("BTB.Entities.Models.Nodo", null)
-                        .WithMany("ArrTropas")
-                        .HasForeignKey("NodoIdNodo");
-                });
-
             modelBuilder.Entity("BTB.Entities.Models.Usuario", b =>
                 {
                     b.HasOne("BTB.Entities.Models.Tier", "Tier")
                         .WithMany("UsuarioId")
-                        .HasForeignKey("Usuario_Tier")
+                        .HasForeignKey("TierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Tier");
                 });
 
-            modelBuilder.Entity("PartidaUsuario", b =>
+            modelBuilder.Entity("UsuarioPartida", b =>
                 {
                     b.HasOne("BTB.Entities.Models.Usuario", null)
                         .WithMany()
@@ -266,14 +347,11 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BTB.Entities.Models.Nodo", b =>
-                {
-                    b.Navigation("ArrTropas");
-                });
-
             modelBuilder.Entity("BTB.Entities.Models.Partida", b =>
                 {
                     b.Navigation("LstNodos");
+
+                    b.Navigation("movimientos");
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Tier", b =>

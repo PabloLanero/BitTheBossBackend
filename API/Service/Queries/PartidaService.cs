@@ -73,7 +73,12 @@ namespace BTB.Service
                 IdPartida = dto.IdPartida ?? Guid.NewGuid().ToString(),
                 ArrUsuario = [await _usuarioService.GetUsuarioById(dto.ArrUsuario[0]),await _usuarioService.GetUsuarioById(dto.ArrUsuario[1])],
             };
-            dto.LstNodos.ForEach(async nodo => partida.LstNodos.Add(await _nodoService.GetNodoByIdAsync(nodo)));
+            dto.LstNodos.ForEach(async nodo =>
+            {
+                NodoDTOOut nodoDtoOut = await _nodoService.GetNodoByIdAsync(nodo);
+                
+                partida.LstNodos.Add(new Nodo{ IdNodo= (byte) nodoDtoOut.IdNodo });  
+            });
 
             return partida;
         }
