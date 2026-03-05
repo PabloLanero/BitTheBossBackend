@@ -94,6 +94,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Para el cors
+string  MyAllowSpecificOrigins = "MiPoliticaDejaATodos";
+builder.Services.AddCors(options =>
+{
+    //Se puede configuara para que unos pocos entren, pero aqui no es el caso
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                      });
+});
 
 
 var app = builder.Build();
@@ -109,7 +122,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors("MiPoliticaDejaATodos");
 app.MapControllers();
 
 app.Run();
