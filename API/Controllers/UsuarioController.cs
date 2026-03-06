@@ -122,10 +122,17 @@ public class UsuarioController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateUsuario(int id, [FromBody] Usuario usuario)
+    public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UserUpdateDTOIn dto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         try
         {
+            var usuario = await _usuarioService.GetUsuarioById(id);
+            if (usuario == null) return NotFound(new { message = "Usuario no encontrado" });
+
+            usuario.Nombre = dto.UserName?.Trim() ?? usuario.Nombre;
+            usuario.Correo = dto.Email?.Trim() ?? usuario.Correo;
+
             var result = await _usuarioService.UpdateUsuario(usuario);
             if (result.UsuarioId <=0) return BadRequest(new { message = "No se pudo actualizar el usuario" });
             return NoContent();

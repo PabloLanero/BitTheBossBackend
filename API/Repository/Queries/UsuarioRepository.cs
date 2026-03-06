@@ -8,13 +8,8 @@ namespace BTB.Repository
 {
     public class UsuarioRepository : IUsuarioRepository
     {
-        private readonly string _connectionString;
-        /// <summary>
-        /// ASEGURATE DE ELIMINAR ESTA VARIABLE
-        /// </summary>
-        private List<Usuario> lstUsuarios = new List<Usuario>();
-        private int id = 1;
         private readonly BTBContext _context;
+
         public UsuarioRepository(BTBContext context)
         {
             _context = context;
@@ -29,61 +24,69 @@ namespace BTB.Repository
                 Password = userDtoIn.Password,
                 Rol = BTB.Entities.Enums.Roles.Usuario,
             };
-            Usuario user =  _context.Usuarios.Add(newUsuario).Entity;
+
+            Usuario user = _context.Usuarios.Add(newUsuario).Entity;
             await _context.SaveChangesAsync();
             await _context.Entry(user).Reference(u => u.Tier).LoadAsync();
+
             var userOut = new UserDTOOut
             {
                 UserId = user.UsuarioId,
                 UserName = user.Nombre,
                 Email = user.Correo,
                 Role = user.Rol,
-                Tier = user.Tier.Titulo
+                Tier = user.Tier?.Titulo ?? "Bronce"
             };
+
             return userOut;
         }
 
         public async Task<bool> DeleteUsuarioAsync(int id)
         {
-            Usuario usuario = _context.Remove<Usuario>(new Usuario{UsuarioId = id}).Entity;
+            Usuario usuario = _context.Remove<Usuario>(new Usuario { UsuarioId = id }).Entity;
             return usuario != null;
         }
 
         public async Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn)
         {
-            Usuario usuario = await _context.Usuarios.FindAsync(new Usuario{Correo = loginDtoIn.Email , Password= loginDtoIn.Password});
-            
-            if (usuario == null) throw new Exception("Credenciales inválidas");
+            Usuario? usuario = await _context.Usuarios
+                .Include(u => u.Tier)
+                .FirstOrDefaultAsync(u =>
+                    u.Correo == loginDtoIn.Email &&
+                    u.Password == loginDtoIn.Password &&
+                    u.Visible);
 
-            // In a real implementation, map to UserDTOOut with real id/role
+            if (usuario == null) throw new Exception("Credenciales invalidas");
+
             var userOut = new UserDTOOut
             {
                 UserId = usuario.UsuarioId,
                 UserName = usuario.Nombre,
                 Email = usuario.Correo,
                 Role = usuario.Rol,
-                Tier = usuario.Tier.Titulo
+                Tier = usuario.Tier?.Titulo ?? "Bronce"
             };
+
             return userOut;
         }
 
         public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            Usuario usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null) throw new Exception("Credenciales inválidas");
-            
+            Usuario? usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) throw new Exception("Credenciales invalidas");
+
             return usuario;
         }
 
         public List<Usuario> GetUsuariosAsync()
         {
-            IEnumerable<Usuario> usuarios = _context.Usuarios.AsQueryable<Usuario>().Where(p => p.Visible);
+            IEnumerable<Usuario> usuarios = _context.Usuarios.AsQueryable().Where(p => p.Visible);
             return usuarios.ToList();
         }
 
         public async Task<Usuario> PostUsuarioAsync(Usuario newUsuario)
         {
-            Usuario usuario =  _context.Usuarios.Add(newUsuario).Entity;
+            Usuario usuario = _context.Usuarios.Add(newUsuario).Entity;
             await _context.SaveChangesAsync();
             return usuario;
         }
@@ -94,6 +97,5 @@ namespace BTB.Repository
             await _context.SaveChangesAsync();
             return usuario;
         }
-
     }
 }

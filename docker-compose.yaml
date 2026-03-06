@@ -1,5 +1,3 @@
-version: '1.0'
-
 services:
   
 
@@ -13,7 +11,7 @@ services:
   #   environment:
   #     - ASPNETCORE_ENVIRONMENT=Development
   #     # Ten cuidado con poner \" , puede causar errores 
-  #     - ConnectionString=server=mysql;Port=1488;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
+  #     - ConnectionString=server=mysql;Port=3306;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
   #   volumes:
   #     - ./logs:/logs
   #   depends_on:
@@ -21,13 +19,11 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
     ports:
-      - "1488:1488"
+      - "1488:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=MySup3rP4ssw0rd!
       - MYSQL_DATABASE=BTBDatabase
-      - MYSQL_TCP_PORT=1488
     
     # volumes:
     #   # - bbddScripts:/var/lib/mysql

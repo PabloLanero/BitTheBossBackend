@@ -120,9 +120,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("MiPoliticaDejaATodos");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("MiPoliticaDejaATodos");
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BTBContext>();
+    db.Database.Migrate();
+}
 
 app.Run();

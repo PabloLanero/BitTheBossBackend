@@ -24,7 +24,7 @@ public class LoginController : ControllerBase
 		try
 		{
 			var token = await _authService.Login(dto);
-			return Ok( token );
+			return Ok(new { token });
 		}
 		catch (ValidationException vex)
 		{
@@ -47,7 +47,7 @@ public class LoginController : ControllerBase
 		try
 		{
 			var token = await _authService.Register(dto);
-			return Ok( token );
+			return Ok(new { token });
 		}
 		catch (ValidationException vex)
 		{
