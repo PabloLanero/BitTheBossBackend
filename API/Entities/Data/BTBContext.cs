@@ -51,10 +51,10 @@ namespace BTB.Data
             // las relaciones
             /// El enlace es este 
             /// https://learn.microsoft.com/en-us/ef/core/modeling/relationships/one-to-many
-            modelBuilder.Entity<Tier>()
-                .HasMany(e => e.UsuarioId)
-                .WithOne(e => e.Tier)
-                .HasForeignKey(e => e.TierId);
+            // modelBuilder.Entity<Tier>()
+            //     .HasMany(e => e.UsuarioId)
+            //     .WithOne(e => e.Tier)
+            //     .HasForeignKey(e => e.TierId);
 
 
             /// A partir de aqui, generado por Claudio
@@ -63,6 +63,9 @@ namespace BTB.Data
                 .HasOne(u => u.Tier)
                 .WithMany(t => t.UsuarioId)
                 .HasForeignKey("TierId");
+            
+            modelBuilder.Entity<Usuario>()
+                .Property(u => u.TierId).HasDefaultValue(1);
             
 
             // Usuario - Partida many-to-many relationship

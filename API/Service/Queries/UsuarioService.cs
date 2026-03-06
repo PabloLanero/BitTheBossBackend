@@ -27,9 +27,9 @@ namespace BTB.Service
             return await _repository.DeleteUsuarioAsync(p_id);
         }
 
-        public Task<Usuario> GetUsuarioById(int p_id)
+        public async Task<Usuario> GetUsuarioById(int p_id)
         {
-            return _repository.GetUsuarioByIdAsync(p_id);
+            return await _repository.GetUsuarioByIdAsync(p_id);
         }
 
         public List<Usuario> GetUsuariosAsync()

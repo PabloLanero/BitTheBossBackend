@@ -72,7 +72,7 @@ namespace API.Migrations
                     Visible = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Rol = table.Column<string>(type: "longtext", nullable: false),
-                    TierId = table.Column<int>(type: "int", nullable: false)
+                    TierId = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -193,9 +193,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "FechaCreacion", "Titulo" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6878), "Bronce" },
-                    { 2, new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6924), "Plata" },
-                    { 3, new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6926), "Oro" }
+                    { 1, new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9197), "Bronce" },
+                    { 2, new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9245), "Plata" },
+                    { 3, new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9246), "Oro" }
                 });
 
             migrationBuilder.InsertData(
@@ -213,10 +213,10 @@ namespace API.Migrations
                 columns: new[] { "UsuarioId", "Correo", "FechaCreacion", "Nombre", "Password", "Rol", "TierId", "Visible" },
                 values: new object[,]
                 {
-                    { 1, "Jhon@gmail.com", new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4087), "Ejemplo", "asd", "Admin", 1, true },
-                    { 2, "Mary@gmail.com", new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4098), "Ejemplo2", "asdasd", "Admin", 1, true },
-                    { 3, "player1@gmail.com", new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099), "Player1", "pass123", "Usuario", 2, true },
-                    { 4, "player2@gmail.com", new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099), "Player2", "pass456", "Usuario", 3, true }
+                    { 1, "Jhon@gmail.com", new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7691), "Ejemplo", "asd", "Admin", 1, true },
+                    { 2, "Mary@gmail.com", new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7703), "Ejemplo2", "asdasd", "Admin", 1, true },
+                    { 3, "player1@gmail.com", new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704), "Player1", "pass123", "Usuario", 2, true },
+                    { 4, "player2@gmail.com", new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704), "Player2", "pass456", "Usuario", 3, true }
                 });
 
             migrationBuilder.CreateIndex(

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(BTBContext))]
-    [Migration("20260305170651_InitialCreate")]
+    [Migration("20260306013154_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -124,19 +124,19 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6878),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9197),
                             Titulo = "Bronce"
                         },
                         new
                         {
                             Id = 2,
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6924),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9245),
                             Titulo = "Plata"
                         },
                         new
                         {
                             Id = 3,
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 50, 999, DateTimeKind.Local).AddTicks(6926),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9246),
                             Titulo = "Oro"
                         });
                 });
@@ -211,7 +211,9 @@ namespace API.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int>("TierId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<bool>("Visible")
                         .HasColumnType("tinyint(1)");
@@ -227,7 +229,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 1,
                             Correo = "Jhon@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4087),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7691),
                             Nombre = "Ejemplo",
                             Password = "asd",
                             Rol = "Admin",
@@ -238,7 +240,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 2,
                             Correo = "Mary@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4098),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7703),
                             Nombre = "Ejemplo2",
                             Password = "asdasd",
                             Rol = "Admin",
@@ -249,7 +251,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 3,
                             Correo = "player1@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704),
                             Nombre = "Player1",
                             Password = "pass123",
                             Rol = "Usuario",
@@ -260,7 +262,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 4,
                             Correo = "player2@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 5, 18, 6, 51, 0, DateTimeKind.Local).AddTicks(4099),
+                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704),
                             Nombre = "Player2",
                             Password = "pass456",
                             Rol = "Usuario",

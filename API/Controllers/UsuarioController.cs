@@ -5,6 +5,8 @@ using BTB.Entities.DTO;
 using Microsoft.AspNetCore.Authorization;
 using BTB.Service.Common;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using System.ComponentModel;
 
 namespace API.Controllers;
 
@@ -25,7 +27,7 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            var usuarios = _usuarioService.GetUsuariosAsync();
+            var usuarios = await _usuarioService.GetUsuarioById(Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value));
             return Ok(usuarios);
         }
         catch (ValidationException vex)

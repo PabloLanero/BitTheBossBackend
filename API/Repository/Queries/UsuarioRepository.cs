@@ -27,18 +27,18 @@ namespace BTB.Repository
                 Nombre = userDtoIn.UserName,
                 Correo = userDtoIn.Email,
                 Password = userDtoIn.Password,
-
-                Rol = BTB.Entities.Enums.Roles.Usuario
+                Rol = BTB.Entities.Enums.Roles.Usuario,
             };
-            Usuario user =  _context.Add(newUsuario).Entity;
+            Usuario user =  _context.Usuarios.Add(newUsuario).Entity;
             await _context.SaveChangesAsync();
-
+            await _context.Entry(user).Reference(u => u.Tier).LoadAsync();
             var userOut = new UserDTOOut
             {
                 UserId = user.UsuarioId,
                 UserName = user.Nombre,
                 Email = user.Correo,
-                Role = user.Rol
+                Role = user.Rol,
+                Tier = user.Tier.Titulo
             };
             return userOut;
         }
@@ -61,15 +61,15 @@ namespace BTB.Repository
                 UserId = usuario.UsuarioId,
                 UserName = usuario.Nombre,
                 Email = usuario.Correo,
-                Role = usuario.Rol
+                Role = usuario.Rol,
+                Tier = usuario.Tier.Titulo
             };
             return userOut;
         }
 
         public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            Usuario usuario = await _context.Usuarios.FindAsync(new Usuario{UsuarioId = id});
-            
+            Usuario usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) throw new Exception("Credenciales inválidas");
             
             return usuario;

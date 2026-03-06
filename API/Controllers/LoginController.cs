@@ -19,12 +19,12 @@ public class LoginController : ControllerBase
 
 	[HttpPost("login")]
 	[AllowAnonymous]
-	public IActionResult Login([FromBody] LoginDtoIn dto)
+	public async Task<IActionResult> Login([FromBody] LoginDtoIn dto)
 	{
 		try
 		{
-			var token = _authService.Login(dto);
-			return Ok(new { token });
+			var token = await _authService.Login(dto);
+			return Ok( token );
 		}
 		catch (ValidationException vex)
 		{
@@ -42,12 +42,12 @@ public class LoginController : ControllerBase
 
 	[HttpPost("register")]
 	[AllowAnonymous]
-	public IActionResult Register([FromBody] UserDTOIn dto)
+	public async Task<IActionResult> Register([FromBody] UserDTOIn dto)
 	{
 		try
 		{
-			var token = _authService.Register(dto);
-			return Ok(new { token });
+			var token = await _authService.Register(dto);
+			return Ok( token );
 		}
 		catch (ValidationException vex)
 		{

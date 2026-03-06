@@ -30,8 +30,7 @@ namespace BTB.Service
         }
 
         public async Task<string> Register(UserDTOIn userDtoIn) {
-            var user = await _usuarioService.AddUserFromCredentials(userDtoIn);
-            
+            UserDTOOut user = await _usuarioService.AddUserFromCredentials(userDtoIn);
             return GenerateToken(user);
         }
 
