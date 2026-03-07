@@ -151,6 +151,36 @@ public class UsuarioController : ControllerBase
         }
     }
 
+    [HttpPut("Image")]
+    [Consumes("multipart/form-data")]
+    [Authorize]
+    public async Task<IActionResult> UpdateUsuarioImage([FromForm] UploadImageDTO formFile)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        try
+        {
+            var usuario = await _usuarioService.GetUsuarioById(Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            if (usuario == null) return NotFound(new { message = "Usuario no encontrado" });
+
+
+            string result = await _usuarioService.UpdateFotousuario(usuario,formFile.Imagen);
+            // if (result.UsuarioId <=0) return BadRequest(new { message = "No se pudo actualizar el usuario" });
+            return Ok(result);
+        }
+        catch (ValidationException vex)
+        {
+            return BadRequest(new { message = vex.Message });
+        }
+        catch (BusinessException bex)
+        {
+            return BadRequest(new { message = bex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeleteUsuario(int id)

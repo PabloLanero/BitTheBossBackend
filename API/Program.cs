@@ -7,18 +7,21 @@ using BTB.Repository.Interfaces;
 using Microsoft.OpenApi.Models;
 using BTB.Data;
 using Microsoft.EntityFrameworkCore;
+using BTB.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 string connexion = builder.Configuration.GetConnectionString("BTBDatabase");
 // Para EntityFramework
 builder.Services.AddDbContext<BTBContext>(options => 
     options.UseMySQL(connexion));
+
+// Para cloudinary
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings")
+);
 
 
 // Register application services / repositories
@@ -64,6 +67,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Para la autentificacion en el swagger
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
@@ -93,6 +98,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 
 // Para el cors
 string  MyAllowSpecificOrigins = "MiPoliticaDejaATodos";

@@ -3,16 +3,56 @@ using BTB.Entities.DTO;
 using BTB.Repository.Interfaces;
 using BTB.Service.Common;
 using System.Threading.Tasks;
+using CloudinaryDotNet;
+using BTB.Configurations;
+using BTB.Utilies;
+using CloudinaryDotNet.Actions;
 
 namespace BTB.Service
 {
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repository;
+        private readonly Cloudinary _cloudinary;
 
-        public UsuarioService(IUsuarioRepository repository)
+        public UsuarioService(IUsuarioRepository repository, IConfiguration configuration)
         {
             _repository = repository;
+            CloudinarySettings cloudinarySettings = new CloudinarySettings
+            {
+                CloudName = configuration["CloudinarySettings:CloudName"],
+                ApiKey = configuration["CloudinarySettings:ApiKey"],
+                ApiSecret = configuration["CloudinarySettings:ApiSecret"],
+            };
+
+            Account account = new Account(
+                cloudinarySettings.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
+            _cloudinary = new Cloudinary(account);
+        }
+
+        public async Task<string> UpdateFotousuario(Usuario usuario, IFormFile foto)
+        {
+            var imageValidator = new FileValidationHelper(
+               new[] { "image/jpeg", "image/png", "image/gif" },
+               new[] { ".jpg", ".jpeg", ".png", ".gif" }
+           );
+           imageValidator.Validate(foto);
+           using var stream = foto.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+           {
+               File = new FileDescription(foto.FileName, stream),
+               /// Para que le haga un corte bien guapo al tamaño de la foto
+               Transformation = new Transformation().Width(400).Height(400).Crop("fill")
+               //Transformation = new Transformation().Width(300).Crop("scale").Chain().Effect("cartoonify")
+               //Effect(vignette",20), Effect("remove_background", 0.5), Effect("sharpen", 50)  
+           };
+           var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+           usuario.imageUrl = uploadResult.SecureUrl?.ToString();
+            _repository.PutUsuarioAsync(usuario);
+            return usuario.imageUrl;
         }
 
         public async Task<Usuario> AddUsuario(Usuario p_usuario)
@@ -69,5 +109,7 @@ namespace BTB.Service
                 throw new BusinessException(ex.Message);
             }
         }
+
+        
     }
 }

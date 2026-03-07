@@ -17,6 +17,7 @@ namespace BTB.Entities.Models
         [NotNull]
         [PasswordPropertyText]
         public string Password {get; set; } = "";
+        public string? imageUrl {get;set;}
         public bool Visible {get; set; }= true;
         public DateTime FechaCreacion {get; set; } = DateTime.Now;
         [NotNull]

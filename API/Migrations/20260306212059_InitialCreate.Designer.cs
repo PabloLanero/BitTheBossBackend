@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(BTBContext))]
-    [Migration("20260306013154_InitialCreate")]
+    [Migration("20260306212059_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -124,19 +124,19 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9197),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7319),
                             Titulo = "Bronce"
                         },
                         new
                         {
                             Id = 2,
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9245),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7396),
                             Titulo = "Plata"
                         },
                         new
                         {
                             Id = 3,
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 781, DateTimeKind.Local).AddTicks(9246),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7398),
                             Titulo = "Oro"
                         });
                 });
@@ -218,6 +218,9 @@ namespace API.Migrations
                     b.Property<bool>("Visible")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("imageUrl")
+                        .HasColumnType("longtext");
+
                     b.HasKey("UsuarioId");
 
                     b.HasIndex("TierId");
@@ -229,7 +232,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 1,
                             Correo = "Jhon@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7691),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4946),
                             Nombre = "Ejemplo",
                             Password = "asd",
                             Rol = "Admin",
@@ -240,7 +243,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 2,
                             Correo = "Mary@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7703),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4959),
                             Nombre = "Ejemplo2",
                             Password = "asdasd",
                             Rol = "Admin",
@@ -251,7 +254,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 3,
                             Correo = "player1@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4960),
                             Nombre = "Player1",
                             Password = "pass123",
                             Rol = "Usuario",
@@ -262,7 +265,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 4,
                             Correo = "player2@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 2, 31, 54, 782, DateTimeKind.Local).AddTicks(7704),
+                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4961),
                             Nombre = "Player2",
                             Password = "pass456",
                             Rol = "Usuario",

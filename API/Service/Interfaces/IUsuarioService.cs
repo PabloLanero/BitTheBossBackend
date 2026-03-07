@@ -11,6 +11,9 @@ namespace BTB.Service
         public Task<Usuario> UpdateUsuario(Usuario p_usuario);
         public Task<bool> DeleteUsuario(int p_id);
 
+        // Cloudinary
+        public Task<string> UpdateFotousuario(Usuario usuario, IFormFile foto);
+
         // Credential-based helpers
         public Task<UserDTOOut> AddUserFromCredentials(UserDTOIn userDtoIn);
         public Task<UserDTOOut> GetUserFromCredentials(LoginDtoIn loginDtoIn);
