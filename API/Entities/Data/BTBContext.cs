@@ -57,24 +57,18 @@ namespace BTB.Data
             //     .HasForeignKey(e => e.TierId);
 
 
-            /// A partir de aqui, generado por Claudio
             // Usuario - Tier relationship
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Tier)
                 .WithMany(t => t.UsuarioId)
-                .HasForeignKey("TierId");
-            
-            modelBuilder.Entity<Usuario>()
-                .Property(u => u.TierId).HasDefaultValue(1);
-            
+                .HasForeignKey(u => u.TierId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Usuario - Partida many-to-many relationship
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Partidas)
-                .WithMany(p => p.ArrUsuario)
-                .UsingEntity("UsuarioPartida");
+                .WithMany(p => p.ArrUsuario);
 
-            /// Mira, Claudio a decidido utilizar objetos genericos para tiparlos, esa es buena
             modelBuilder.Entity<Usuario>().HasData(
                 new { UsuarioId = 1, Nombre = "Ejemplo", Correo = "Jhon@gmail.com", Password = "asd", FechaCreacion = DateTime.Now, Visible = true, Rol = Roles.Admin, TierId = 1 },
                 new { UsuarioId = 2, Nombre = "Ejemplo2", Correo = "Mary@gmail.com", Password = "asdasd", FechaCreacion = DateTime.Now, Visible = true, Rol = Roles.Admin, TierId = 1 },
@@ -82,46 +76,47 @@ namespace BTB.Data
                 new { UsuarioId = 4, Nombre = "Player2", Correo = "player2@gmail.com", Password = "pass456", FechaCreacion = DateTime.Now, Visible = true, Rol = Roles.Usuario, TierId = 3 }
             );
 
-            // Partida relationships
+            // Partida - Nodo relationship
             modelBuilder.Entity<Partida>()
                 .HasMany(p => p.LstNodos)
                 .WithOne()
-                .HasForeignKey("PartidaIdPartida");
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // Partida - Movimiento relationship
             modelBuilder.Entity<Partida>()
                 .HasMany(p => p.movimientos)
                 .WithOne(m => m.Partida)
-                .HasForeignKey("PartidaIdPartida");
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Partida>().HasData(
                 new Partida { IdPartida = "partida-001" },
                 new Partida { IdPartida = "partida-002" }
             );
 
-            // Movimiento relationships
+            // Movimiento - Tropa relationship
             modelBuilder.Entity<Movimiento>()
                 .HasOne(m => m.Tropa)
                 .WithMany()
-                .HasForeignKey("TropaId");
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Movimiento - Nodo relationship
             modelBuilder.Entity<Movimiento>()
                 .HasOne(m => m.NodoDestino)
                 .WithMany()
-                .HasForeignKey("NodoDestinoIdNodo");
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Tropa
             modelBuilder.Entity<Tropa>().HasData(
                 new Tropa { Id = 1, Nombre = "Triangulo", Vida = 100f, Damage = 50f },
                 new Tropa { Id = 2, Nombre = "Cuadrado", Vida = 100f, Damage = 50f },
                 new Tropa { Id = 3, Nombre = "Circulo", Vida = 100f, Damage = 50f }
             );
 
-            // Nodo relationships
+            // Nodo - Usuario relationship
             modelBuilder.Entity<Nodo>()
                 .HasOne(n => n.DuenoNodo)
                 .WithMany()
-                .HasForeignKey("DuenoNodoUsuarioId")
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Nodo>().Ignore(n => n.ArrTropas);
 
