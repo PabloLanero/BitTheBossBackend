@@ -1,21 +1,20 @@
 services:
-  
 
-  # api:
-  #   container_name: Backend
-  #   build: 
-  #     context: ./API/ 
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8841:8080"
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     # Ten cuidado con poner \" , puede causar errores 
-  #     - ConnectionString=server=mysql;Port=3306;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
-  #   volumes:
-  #     - ./logs:/logs
-  #   depends_on:
-  #     - mysql
+  api:
+    container_name: Backend
+    build: 
+      context: ./API/
+      dockerfile: Dockerfile
+    ports:
+      - "5211:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__BTBDatabase=server=mysql;Port=3306;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
+    volumes:
+      - ./logs:/logs
+    depends_on:
+      - mysql
+    restart: on-failure
 
   mysql:
     image: mysql:8.0
