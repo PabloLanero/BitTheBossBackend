@@ -8,6 +8,12 @@ services:
   #     - MYSQL_ROOT_PASSWORD=MySup3rP4ssw0rd!
   #     - MYSQL_DATABASE=BTBDatabase
 
+  web: 
+    container_name: Frontend 
+    image: lanero/btb:frontend
+    ports:
+      - "5173:80"
+
   api:
     container_name: Backend 
     image: lanero/btb:backend
