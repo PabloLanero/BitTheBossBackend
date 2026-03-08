@@ -73,7 +73,7 @@ namespace API.Migrations
                     Visible = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Rol = table.Column<string>(type: "longtext", nullable: false),
-                    TierId = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
+                    TierId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,7 +83,7 @@ namespace API.Migrations
                         column: x => x.TierId,
                         principalTable: "Tiers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -102,37 +102,14 @@ namespace API.Migrations
                         name: "FK_Nodos_Partidas_PartidaIdPartida",
                         column: x => x.PartidaIdPartida,
                         principalTable: "Partidas",
-                        principalColumn: "IdPartida");
+                        principalColumn: "IdPartida",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Nodos_Usuarios_DuenoNodoUsuarioId",
                         column: x => x.DuenoNodoUsuarioId,
                         principalTable: "Usuarios",
-                        principalColumn: "UsuarioId");
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UsuarioPartida",
-                columns: table => new
-                {
-                    ArrUsuarioUsuarioId = table.Column<int>(type: "int", nullable: false),
-                    PartidasIdPartida = table.Column<string>(type: "varchar(255)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UsuarioPartida", x => new { x.ArrUsuarioUsuarioId, x.PartidasIdPartida });
-                    table.ForeignKey(
-                        name: "FK_UsuarioPartida_Partidas_PartidasIdPartida",
-                        column: x => x.PartidasIdPartida,
-                        principalTable: "Partidas",
-                        principalColumn: "IdPartida",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UsuarioPartida_Usuarios_ArrUsuarioUsuarioId",
-                        column: x => x.ArrUsuarioUsuarioId,
-                        principalTable: "Usuarios",
                         principalColumn: "UsuarioId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -154,7 +131,7 @@ namespace API.Migrations
                         column: x => x.NodoDestinoIdNodo,
                         principalTable: "Nodos",
                         principalColumn: "IdNodo",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Movimientos_Partidas_PartidaIdPartida",
                         column: x => x.PartidaIdPartida,
@@ -166,7 +143,7 @@ namespace API.Migrations
                         column: x => x.TropaId,
                         principalTable: "Tropas",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -194,9 +171,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "FechaCreacion", "Titulo" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7319), "Bronce" },
-                    { 2, new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7396), "Plata" },
-                    { 3, new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7398), "Oro" }
+                    { 1, new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5859), "Bronce" },
+                    { 2, new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5901), "Plata" },
+                    { 3, new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5903), "Oro" }
                 });
 
             migrationBuilder.InsertData(
@@ -214,10 +191,10 @@ namespace API.Migrations
                 columns: new[] { "UsuarioId", "Correo", "FechaCreacion", "Nombre", "Password", "Rol", "TierId", "Visible", "imageUrl" },
                 values: new object[,]
                 {
-                    { 1, "Jhon@gmail.com", new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4946), "Ejemplo", "asd", "Admin", 1, true, null },
-                    { 2, "Mary@gmail.com", new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4959), "Ejemplo2", "asdasd", "Admin", 1, true, null },
-                    { 3, "player1@gmail.com", new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4960), "Player1", "pass123", "Usuario", 2, true, null },
-                    { 4, "player2@gmail.com", new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4961), "Player2", "pass456", "Usuario", 3, true, null }
+                    { 1, "Jhon@gmail.com", new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6741), "Ejemplo", "asd", "Admin", 1, true, null },
+                    { 2, "Mary@gmail.com", new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6745), "Ejemplo2", "asdasd", "Admin", 1, true, null },
+                    { 3, "player1@gmail.com", new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6746), "Player1", "pass123", "Usuario", 2, true, null },
+                    { 4, "player2@gmail.com", new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6747), "Player2", "pass456", "Usuario", 3, true, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -246,11 +223,6 @@ namespace API.Migrations
                 column: "PartidaIdPartida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsuarioPartida_PartidasIdPartida",
-                table: "UsuarioPartida",
-                column: "PartidasIdPartida");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_TierId",
                 table: "Usuarios",
                 column: "TierId");
@@ -261,9 +233,6 @@ namespace API.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Movimientos");
-
-            migrationBuilder.DropTable(
-                name: "UsuarioPartida");
 
             migrationBuilder.DropTable(
                 name: "Nodos");

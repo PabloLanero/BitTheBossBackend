@@ -121,19 +121,19 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7319),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5859),
                             Titulo = "Bronce"
                         },
                         new
                         {
                             Id = 2,
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7396),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5901),
                             Titulo = "Plata"
                         },
                         new
                         {
                             Id = 3,
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 334, DateTimeKind.Local).AddTicks(7398),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(5903),
                             Titulo = "Oro"
                         });
                 });
@@ -208,9 +208,7 @@ namespace API.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int>("TierId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("int");
 
                     b.Property<bool>("Visible")
                         .HasColumnType("tinyint(1)");
@@ -229,7 +227,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 1,
                             Correo = "Jhon@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4946),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6741),
                             Nombre = "Ejemplo",
                             Password = "asd",
                             Rol = "Admin",
@@ -240,7 +238,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 2,
                             Correo = "Mary@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4959),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6745),
                             Nombre = "Ejemplo2",
                             Password = "asdasd",
                             Rol = "Admin",
@@ -251,7 +249,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 3,
                             Correo = "player1@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4960),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6746),
                             Nombre = "Player1",
                             Password = "pass123",
                             Rol = "Usuario",
@@ -262,7 +260,7 @@ namespace API.Migrations
                         {
                             UsuarioId = 4,
                             Correo = "player2@gmail.com",
-                            FechaCreacion = new DateTime(2026, 3, 6, 22, 20, 59, 335, DateTimeKind.Local).AddTicks(4961),
+                            FechaCreacion = new DateTime(2026, 3, 8, 22, 2, 0, 561, DateTimeKind.Local).AddTicks(6747),
                             Nombre = "Player2",
                             Password = "pass456",
                             Rol = "Usuario",
@@ -271,27 +269,12 @@ namespace API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("UsuarioPartida", b =>
-                {
-                    b.Property<int>("ArrUsuarioUsuarioId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PartidasIdPartida")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("ArrUsuarioUsuarioId", "PartidasIdPartida");
-
-                    b.HasIndex("PartidasIdPartida");
-
-                    b.ToTable("UsuarioPartida");
-                });
-
             modelBuilder.Entity("BTB.Entities.Models.Movimiento", b =>
                 {
                     b.HasOne("BTB.Entities.Models.Nodo", "NodoDestino")
                         .WithMany()
                         .HasForeignKey("NodoDestinoIdNodo")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BTB.Entities.Models.Partida", "Partida")
@@ -303,7 +286,7 @@ namespace API.Migrations
                     b.HasOne("BTB.Entities.Models.Tropa", "Tropa")
                         .WithMany()
                         .HasForeignKey("TropaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("NodoDestino");
@@ -317,11 +300,13 @@ namespace API.Migrations
                 {
                     b.HasOne("BTB.Entities.Models.Usuario", "DuenoNodo")
                         .WithMany()
-                        .HasForeignKey("DuenoNodoUsuarioId");
+                        .HasForeignKey("DuenoNodoUsuarioId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("BTB.Entities.Models.Partida", null)
                         .WithMany("LstNodos")
-                        .HasForeignKey("PartidaIdPartida");
+                        .HasForeignKey("PartidaIdPartida")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("DuenoNodo");
                 });
@@ -331,25 +316,10 @@ namespace API.Migrations
                     b.HasOne("BTB.Entities.Models.Tier", "Tier")
                         .WithMany("UsuarioId")
                         .HasForeignKey("TierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Tier");
-                });
-
-            modelBuilder.Entity("UsuarioPartida", b =>
-                {
-                    b.HasOne("BTB.Entities.Models.Usuario", null)
-                        .WithMany()
-                        .HasForeignKey("ArrUsuarioUsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BTB.Entities.Models.Partida", null)
-                        .WithMany()
-                        .HasForeignKey("PartidasIdPartida")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BTB.Entities.Models.Partida", b =>

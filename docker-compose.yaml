@@ -1,29 +1,27 @@
 services:
   
-
-  # api:
-  #   container_name: Backend
-  #   build: 
-  #     context: ./API/ 
-  #     dockerfile: Dockerfile
+  # mysql:
+  #   image: mysql:8.0
   #   ports:
-  #     - "8841:8080"
+  #     - "1488:3306"
   #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     # Ten cuidado con poner \" , puede causar errores 
-  #     - ConnectionString=server=mysql;Port=3306;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
-  #   volumes:
-  #     - ./logs:/logs
-  #   depends_on:
-  #     - mysql
+  #     - MYSQL_ROOT_PASSWORD=MySup3rP4ssw0rd!
+  #     - MYSQL_DATABASE=BTBDatabase
 
-  mysql:
-    image: mysql:8.0
+  api:
+    container_name: Backend 
+    image: lanero/btb:backend
     ports:
-      - "1488:3306"
+      - "5211:8080"
     environment:
-      - MYSQL_ROOT_PASSWORD=MySup3rP4ssw0rd!
-      - MYSQL_DATABASE=BTBDatabase
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Ten cuidado con poner \" , puede causar errores 
+      - ConnectionString=server=mysql;Port=3306;uid=root;pwd=MySup3rP4ssw0rd!;database=BTBDatabase;
+    # volumes:
+    #   - ./logs:/logs
+    # depends_on:
+    #   - mysql
+
     
     # volumes:
     #   # - bbddScripts:/var/lib/mysql
