@@ -64,11 +64,6 @@ namespace BTB.Data
                 .HasForeignKey(u => u.TierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Usuario - Partida many-to-many relationship
-            modelBuilder.Entity<Usuario>()
-                .HasMany(u => u.Partidas)
-                .WithMany(p => p.ArrUsuario);
-
             modelBuilder.Entity<Usuario>().HasData(
                 new { UsuarioId = 1, Nombre = "Ejemplo", Correo = "Jhon@gmail.com", Password = "asd", FechaCreacion = DateTime.Now, Visible = true, Rol = Roles.Admin, TierId = 1 },
                 new { UsuarioId = 2, Nombre = "Ejemplo2", Correo = "Mary@gmail.com", Password = "asdasd", FechaCreacion = DateTime.Now, Visible = true, Rol = Roles.Admin, TierId = 1 },

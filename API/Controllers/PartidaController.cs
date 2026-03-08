@@ -76,7 +76,7 @@ public class PartidaController : ControllerBase
         try
         {
             var created = await _partidaService.AddPartidaAsync(dto);
-            return CreatedAtAction(nameof(GetPartida), new { id = created.IdPartida }, created);
+            return Ok(created);
         }
         catch (BTB.Service.Common.ValidationException vex)
         {

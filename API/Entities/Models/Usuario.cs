@@ -25,6 +25,7 @@ namespace BTB.Entities.Models
         [DefaultValue(1)]
         public int TierId {get; set; } = 1; // Por EFCore
         public Tier? Tier {get;set;} 
+        [NotMapped]
         public List<Partida>? Partidas {get; set; } = new List<Partida>();
         public Usuario(){}
 

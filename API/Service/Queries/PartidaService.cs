@@ -9,29 +9,31 @@ namespace BTB.Service
     public class PartidaService : IPartidaService
     {
         private readonly IPartidaRepository _repository;
-        private readonly INodoService _nodoService;
-        private readonly IUsuarioService _usuarioService;
 
         public PartidaService(IPartidaRepository repository, INodoService nodoService, IUsuarioService usuarioService)
         {
             _repository = repository;
-            _nodoService = nodoService;
-            _usuarioService = usuarioService;
+            _ = nodoService;
+            _ = usuarioService;
         }
 
         public async Task<PartidaDTOOut> AddPartidaAsync(PartidaDTOIn dto)
         {
             if (dto == null) throw new ValidationException("PartidaDTOIn no puede ser null");
-            if (dto.ArrUsuario == null || !dto.ArrUsuario.Any()) throw new ValidationException("La partida debe contener al menos un usuario.");
-            // if (dto.LstNodos != null)
-            // {
-            //     var duplicate = dto.LstNodos.GroupBy(n => n.IdNodo).Any(g => g.Count() > 1);
-            //     if (duplicate) throw new ValidationException("Hay nodos duplicados (IdNodo debe ser único).");
-            // }
 
-            var model = await MapDtoToModel(dto);
-            await _repository.PostPartidaAsync(model);
-            return MapModelToDto(model);
+            var requestedId = (dto.IdPartida ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(requestedId))
+                throw new ValidationException("El nombre de la partida es obligatorio.");
+
+            var finalId = await EnsureUniquePartidaIdAsync(requestedId);
+            var model = new Partida
+            {
+                IdPartida = finalId,
+                LstNodos = new List<Nodo>()
+            };
+
+            var created = await _repository.PostPartidaAsync(model);
+            return MapModelToDto(created);
         }
 
         public Task<bool> DeletePartidaAsync(string id)
@@ -47,55 +49,52 @@ namespace BTB.Service
             return MapModelToDto(p);
         }
 
-        public async Task<List<PartidaDTOOut>> GetPartidasAsync()
+        public Task<List<PartidaDTOOut>> GetPartidasAsync()
         {
-            var lst =  _repository.GetPartidasAsync();
-            return lst.Select(MapModelToDto).ToList();
+            var lst = _repository.GetPartidasAsync();
+            var mapped = lst.Select(MapModelToDto).ToList();
+            return Task.FromResult(mapped);
         }
 
         public async Task<PartidaDTOOut> UpdatePartidaAsync(string id, PartidaDTOIn dto)
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ValidationException("Id inválido para actualizar partida.");
-            var existing = _repository.GetPartidaByIdAsync(id).GetAwaiter().GetResult();
-            if (existing == null) throw new NotFoundException($"Partida con id {id} no encontrada.");
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ValidationException("Id invalido para actualizar partida.");
 
-            var model = await MapDtoToModel(dto);
-            
-            Partida partida = await _repository.PutPartidaAsync(model);
-            PartidaDTOOut partidaDTOOut = MapModelToDto(partida);
-            return partidaDTOOut;
+            if (dto == null)
+                throw new ValidationException("PartidaDTOIn no puede ser null");
+
+            var existing = await _repository.GetPartidaByIdAsync(id);
+            if (existing == null)
+                throw new NotFoundException($"Partida con id {id} no encontrada.");
+
+            var partida = await _repository.PutPartidaAsync(existing);
+            return MapModelToDto(partida);
         }
 
-        private async Task<Partida> MapDtoToModel(PartidaDTOIn dto)
+        private async Task<string> EnsureUniquePartidaIdAsync(string baseId)
         {
-            var partida = new Partida
-            {
-                IdPartida = dto.IdPartida ?? Guid.NewGuid().ToString(),
-                ArrUsuario = [await _usuarioService.GetUsuarioById(dto.ArrUsuario[0]),await _usuarioService.GetUsuarioById(dto.ArrUsuario[1])],
-            };
-            dto.LstNodos.ForEach(async nodo =>
-            {
-                NodoDTOOut nodoDtoOut = await _nodoService.GetNodoByIdAsync(nodo);
-                
-                partida.LstNodos.Add(new Nodo{ IdNodo= (byte) nodoDtoOut.IdNodo });  
-            });
+            var candidate = baseId;
+            var suffix = 1;
 
-            return partida;
+            while (await _repository.GetPartidaByIdAsync(candidate) != null)
+            {
+                candidate = $"{baseId}-{suffix}";
+                suffix++;
+            }
+
+            return candidate;
         }
 
-        private PartidaDTOOut MapModelToDto(Partida partida)
+        private static PartidaDTOOut MapModelToDto(Partida partida)
         {
             if (partida == null) return new PartidaDTOOut();
 
             return new PartidaDTOOut
             {
                 IdPartida = partida.IdPartida,
-                ArrUsuario = partida.ArrUsuario?.Select(u => new UsuarioRefDTOOut { Id = u.UsuarioId, Nombre = u.Nombre, Correo = u.Correo }).ToList() ?? new List<UsuarioRefDTOOut>(),
-                LstNodos = partida.LstNodos?.Select(n => new NodoDTOOut {
-                    IdNodo = n.IdNodo,
-                    ArrTropas = n.ArrTropas?.Select(t => new TropaDTOOut { Id = t.Id, Nombre = t.Nombre, Vida = t.Vida, Damage = t.Damage }).ToList() ?? new List<TropaDTOOut>(),
-                    DuenoNodo = n.DuenoNodo == null ? null : new UsuarioRefDTOOut { Id = n.DuenoNodo.UsuarioId, Nombre = n.DuenoNodo.Nombre, Correo = n.DuenoNodo.Correo }
-                }).ToList() ?? new List<NodoDTOOut>()
+                ArrUsuario = new List<UsuarioRefDTOOut>(),
+                LstNodos = new List<NodoDTOOut>()
             };
         }
     }

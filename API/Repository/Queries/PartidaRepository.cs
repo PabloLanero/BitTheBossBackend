@@ -24,14 +24,15 @@ namespace BTB.Repository
 
         public async Task<Partida?> GetPartidaByIdAsync(string id)
         {
-            Partida partida = await _context.Partidas.FindAsync(new Partida{IdPartida= id});
+            Partida partida = await _context.Partidas.FindAsync(id);
             return partida;
         }
 
         public List<Partida> GetPartidasAsync()
         {
-            IEnumerable<Partida> partidas =  _context.Partidas.AsQueryable<Partida>()
-            .Include(p => p.ArrUsuario).Include(p => p.LstNodos).Include(p => p.movimientos);
+            IEnumerable<Partida> partidas = _context.Partidas
+                .AsNoTracking()
+                .AsQueryable();
             return partidas.ToList();
         }
 
